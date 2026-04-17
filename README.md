@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Aquascape 鱼缸造景定制网站
 
-## Getting Started
+> 3D 打印鱼缸造景个性化定制平台
 
-First, run the development server:
+## 项目简介
+
+这是一个基于 Next.js 的现代 web 应用，用于提供 3D 打印鱼缸造景的个性化定制服务。
+
+## 技术栈
+
+| 类别 | 技术 |
+|------|------|
+| 框架 | Next.js 16 (App Router) |
+| 语言 | TypeScript |
+| 样式 | Tailwind CSS 4 |
+| UI 组件库 | shadcn/ui (基于 Radix Primitives) |
+| 包管理 | pnpm |
+| 部署平台 | Vercel |
+
+## 开发指南
+
+### 安装依赖
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 启动开发服务器
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+访问 http://localhost:3000
 
-## Learn More
+### 构建生产版本
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+pnpm build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 添加 UI 组件
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# 添加按钮
+pnpm dlx shadcn@latest add button
 
-## Deploy on Vercel
+# 添加卡片
+pnpm dlx shadcn@latest add card
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 添加输入框
+pnpm dlx shadcn@latest add input
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 项目结构
+
+```
+aquascape/
+├── src/
+│   ├── app/              # Next.js App Router
+│   │   ├── layout.tsx    # 根布局
+│   │   ├── page.tsx      # 首页
+│   │   └── globals.css   # 全局样式
+│   ├── components/
+│   │   └── ui/           # shadcn/ui 组件
+│   └── lib/
+│       └── utils.ts      # 工具函数
+├── public/               # 静态资源
+├── components.json       # shadcn/ui 配置
+├── next.config.ts        # Next.js 配置
+├── tailwind.config.ts    # Tailwind 配置
+└── package.json
+```
+
+## 相关链接
+
+- [Next.js 文档](https://nextjs.org/docs)
+- [shadcn/ui 文档](https://ui.shadcn.com)
+- [Tailwind CSS](https://tailwindcss.com)
+- [Vercel 部署](https://vercel.com)
+
+## License
+
+MIT
