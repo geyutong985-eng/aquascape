@@ -2,9 +2,12 @@
 
 > 3D 打印鱼缸造景个性化定制平台
 
-## 项目简介
+## 项目状态
 
-这是一个基于 Next.js 的现代 web 应用，用于提供 3D 打印鱼缸造景的个性化定制服务。
+✅ **已初始化完成，组员可直接开发：**
+- shadcn/ui 样式系统 + Tailwind CSS 4
+- Button 组件已就绪
+- `pnpm install` 后即可 `pnpm dev` 启动
 
 ## 技术栈
 
@@ -12,73 +15,45 @@
 |------|------|
 | 框架 | Next.js 16 (App Router) |
 | 语言 | TypeScript |
-| 样式 | Tailwind CSS 4 |
-| UI 组件库 | shadcn/ui (基于 Radix Primitives) |
+| 样式 | Tailwind CSS 4（已通过 shadcn/ui 配置） |
+| UI 组件库 | shadcn/ui (Maia 风格) |
 | 包管理 | pnpm |
-| 部署平台 | Vercel |
 
-## 开发指南
-
-### 安装依赖
+## 快速开始
 
 ```bash
+# clone 后
 pnpm install
-```
-
-### 启动开发服务器
-
-```bash
 pnpm dev
 ```
 
-访问 http://localhost:3000
+添加更多组件：`pnpm dlx shadcn@latest add card input form`
 
-### 构建生产版本
+## Git 使用（重要！）
 
-```bash
-pnpm build
-```
+现在是测试阶段，可以直接在本分支开发调试。
 
-### 添加 UI 组件
-
-```bash
-# 添加按钮
-pnpm dlx shadcn@latest add button
-
-# 添加卡片
-pnpm dlx shadcn@latest add card
-
-# 添加输入框
-pnpm dlx shadcn@latest add input
-```
+如果需要把自己做的东西推送到 GitHub：
+- **新建分支**：`git checkout -b feat/你的功能名`
+- **不要直接 push 到 main/master 主分支**
+- 合并前先提 PR 或让其他人 code review
 
 ## 项目结构
 
 ```
 aquascape/
-├── src/
-│   ├── app/              # Next.js App Router
-│   │   ├── layout.tsx    # 根布局
-│   │   ├── page.tsx      # 首页
-│   │   └── globals.css   # 全局样式
-│   ├── components/
-│   │   └── ui/           # shadcn/ui 组件
-│   └── lib/
-│       └── utils.ts      # 工具函数
-├── public/               # 静态资源
+├── src/app/              # 页面
+│   ├── layout.tsx        # 根布局
+│   ├── page.tsx          # 首页
+│   └── globals.css       # 全局样式 + shadcn 主题
+├── src/components/ui/    # shadcn/ui 组件
+├── src/lib/utils.ts      # cn() 工具函数
 ├── components.json       # shadcn/ui 配置
-├── next.config.ts        # Next.js 配置
-├── tailwind.config.ts    # Tailwind 配置
 └── package.json
 ```
 
 ## 相关链接
 
-- [Next.js 文档](https://nextjs.org/docs)
-- [shadcn/ui 文档](https://ui.shadcn.com)
-- [Tailwind CSS](https://tailwindcss.com)
-- [Vercel 部署](https://vercel.com)
-
-## License
-
-MIT
+- [shadcn/ui](https://ui.shadcn.com)
+- [Next.js](https://nextjs.org/docs)
+- [Vercel](https://vercel.com)
