@@ -50,19 +50,19 @@
 }
 
 :root {
-  /* Clean, minimal like Supabase */
-  --background: oklch(1 0 0);
+  /* Clean, minimal like Supabase - cold tint */
+  --background: oklch(0.985 0.005 180);
   --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
+  --card: oklch(0.985 0.005 180);
   --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
+  --popover: oklch(0.985 0.005 180);
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.145 0 0);
-  --primary-foreground: oklch(1 0 0);
+  --primary-foreground: oklch(0.985 0.005 180);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted: oklch(0.97 0.005 180);
+  --muted-foreground: oklch(0.556 0.005 180);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -74,9 +74,9 @@
   --chart-3: oklch(0.648 0.2 131.684);
   --chart-4: oklch(0.532 0.157 131.589);
   --chart-5: oklch(0.453 0.124 130.933);
-  /* Brand color only for primary actions */
-  --brand: oklch(0.45 0.14 177);
-  --brand-muted: oklch(0.92 0.08 175);
+  /* Brand color - blue-teal like water */
+  --brand: oklch(0.40 0.15 190);
+  --brand-muted: oklch(0.91 0.05 190);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);

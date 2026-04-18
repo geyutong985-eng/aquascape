@@ -54,13 +54,13 @@ export default function Home() {
 
           {/* Feature Tags - centered */}
           <div className="flex flex-wrap gap-3 mb-10 justify-center">
-            <span className="px-4 py-1.5 rounded-full bg-brand-muted/30 text-brand text-sm font-medium">
+            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium">
               AI-Powered
             </span>
-            <span className="px-4 py-1.5 rounded-full bg-brand-muted/30 text-brand text-sm font-medium">
+            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium">
               3D Preview
             </span>
-            <span className="px-4 py-1.5 rounded-full bg-brand-muted/30 text-brand text-sm font-medium">
+            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium">
               3D Printed
             </span>
           </div>
