@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { BubbleBackground } from "@/components/bubble-background";
+import { WaveDecoration } from "@/components/wave-decoration";
 
 // Sample aquascape data for showcase
 const showcases = [
@@ -39,12 +40,17 @@ export default function Home() {
 
       {/* Hero Section - centered like Supabase */}
       <section className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
-        {/* Bubble particles */}
-        <div className="absolute inset-0" style={{ zIndex: 0 }}>
+        {/* Wave background - full screen */}
+        <div className="absolute inset-0" style={{ zIndex: 2 }}>
+          <WaveDecoration />
+        </div>
+
+        {/* Bubble particles - subtle overlay */}
+        <div className="absolute inset-0" style={{ zIndex: 1 }}>
           <BubbleBackground />
         </div>
 
-        <div className="max-w-3xl mx-auto w-full relative text-center" style={{ zIndex: 1 }}>
+        <div className="max-w-3xl mx-auto w-full relative text-center" style={{ zIndex: 3 }}>
           <h1 className="heading-display text-foreground mb-6">
             Build Your Dream <span className="text-brand">Aquarium</span>
           </h1>
