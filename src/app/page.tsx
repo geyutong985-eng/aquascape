@@ -21,18 +21,25 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b border-border/30">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-8 h-8 rounded-full border-2 border-brand flex items-center justify-center transition-transform group-hover:scale-105">
-              <div className="w-3 h-3 rounded-full bg-brand" />
-            </div>
-            <span className="text-lg text-foreground font-medium">Aquascape</span>
-          </Link>
-          <div className="flex items-center gap-8 text-sm">
-            <Link href="#showcase" className="text-muted-foreground hover:text-foreground transition-colors">Gallery</Link>
-            <Link href="#about" className="text-muted-foreground hover:text-foreground transition-colors">About</Link>
-            <Link href="/customize" className="text-brand font-medium hover:opacity-80 transition-opacity">
-              Start Designing
+        <div className="max-w-7xl mx-auto px-9 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="w-8 h-8 rounded-full border-2 border-brand flex items-center justify-center transition-transform group-hover:scale-105">
+                <div className="w-3 h-3 rounded-full bg-brand" />
+              </div>
+              <span className="text-lg text-foreground font-semibold">Aquascape</span>
+            </Link>
+            <Link href="#showcase" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Gallery</Link>
+            <Link href="#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">About</Link>
+            <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
+          </div>
+          <div className="flex items-center gap-5">
+            <Link href="/register" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Register</Link>
+            <Link href="/ask-ai" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Ask AI</Link>
+            <Link href="/login">
+              <Button size="default">
+                Log in
+              </Button>
             </Link>
           </div>
         </div>
@@ -52,7 +59,7 @@ export default function Home() {
 
         <div className="max-w-3xl mx-auto w-full relative text-center" style={{ zIndex: 3 }}>
           <h1 className="heading-display text-foreground mb-6">
-            Build Your Dream <span className="text-brand">Aquarium</span>
+            Build Your Dream <span className="text-brand" style={{ fontFamily: "'Young Serif', serif" }}>Aquarium</span>
           </h1>
           <p className="text-lg text-muted-foreground mb-10 max-w-lg mx-auto leading-relaxed">
             Design stunning <span className="text-foreground font-semibold">aquascapes</span> with AI assistance. <span className="text-foreground font-semibold">Visualize</span> in 3D. <span className="text-foreground font-semibold">Print</span> your creation with precision.
@@ -60,13 +67,13 @@ export default function Home() {
 
           {/* Feature Tags - centered */}
           <div className="flex flex-wrap gap-3 mb-10 justify-center">
-            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium">
+            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium hover:bg-muted/50 transition-colors cursor-default">
               AI-Powered
             </span>
-            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium">
+            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium hover:bg-muted/50 transition-colors cursor-default">
               3D Preview
             </span>
-            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium">
+            <span className="px-4 py-1.5 rounded-full border border-border/60 text-muted-foreground text-sm font-medium hover:bg-muted/50 transition-colors cursor-default">
               3D Printed
             </span>
           </div>

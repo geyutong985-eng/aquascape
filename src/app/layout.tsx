@@ -13,7 +13,7 @@ const youngSerif = Young_Serif({
 const sourceSans3 = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-sans",
-  weight: ["400", "600"],
+  weight: ["400", "500", "600"],
 });
 
 export const metadata: Metadata = {
