@@ -7,9 +7,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-heading);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,14 +50,15 @@
 }
 
 :root {
+  /* Clean, minimal like Supabase */
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.841 0.238 128.85);
-  --primary-foreground: oklch(0.405 0.101 131.063);
+  --primary: oklch(0.145 0 0);
+  --primary-foreground: oklch(1 0 0);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
   --muted: oklch(0.97 0 0);
@@ -72,6 +74,9 @@
   --chart-3: oklch(0.648 0.2 131.684);
   --chart-4: oklch(0.532 0.157 131.589);
   --chart-5: oklch(0.453 0.124 130.933);
+  /* Brand color only for primary actions */
+  --brand: oklch(0.45 0.14 177);
+  --brand-muted: oklch(0.92 0.08 175);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -127,4 +132,55 @@
   html {
     @apply font-sans;
   }
+}
+
+@layer utilities {
+  .heading-display {
+    @apply font-heading font-normal text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight;
+  }
+  .heading-1 {
+    @apply font-heading font-normal text-4xl md:text-5xl leading-[1.1];
+  }
+  .heading-2 {
+    @apply font-heading font-normal text-3xl md:text-4xl leading-[1.15];
+  }
+  .heading-3 {
+    @apply font-heading font-normal text-xl md:text-2xl leading-[1.25];
+  }
+  .text-body {
+    @apply text-base md:text-lg leading-relaxed;
+  }
+  .text-caption {
+    @apply text-sm leading-normal text-muted-foreground;
+  }
+}
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Aquatic animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+@keyframes ripple {
+  0% { transform: scale(0.8); opacity: 0; }
+  50% { opacity: 0.3; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+@keyframes swim {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100vw); }
+}
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+.animate-ripple {
+  animation: ripple 2s ease-out infinite;
 }
