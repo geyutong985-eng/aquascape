@@ -19,8 +19,8 @@ export function ShowcaseMarquee({ items }: ShowcaseMarqueeProps) {
   const allItems = [...items, ...items, ...items, ...items, ...items, ...items, ...items];
 
   return (
-    <div className="overflow-hidden py-4">
-      <div className="flex animate-[marquee_40s_linear_infinite] gap-4" style={{ width: "200%" }}>
+    <div className="overflow-hidden py-4 group">
+      <div className="flex animate-[marquee_40s_linear_infinite] gap-4 group-hover:[animation-play-state:paused]">
         {allItems.map((item, index) => (
           <Link
             key={`${item.id}-${index}`}
