@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 
 export function Header() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm border-b border-border/30">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm pt-2">
       <div className="max-w-7xl mx-auto px-9 h-16 flex items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-3 group">
@@ -17,8 +17,8 @@ export function Header() {
           <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
         </div>
         <div className="flex items-center gap-5">
-          <Link href="/ask-ai" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Ask AI</Link>
-          <Link href="/register" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Register</Link>
+          <Link href="/ask-ai" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">Ask AI</Link>
+          <Link href="/register" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">Register</Link>
           <Link href="/login">
             <Button size="default">
               Log in

@@ -1,6 +1,7 @@
 import { Header } from "@/components/layouts/header";
 import { Footer } from "@/components/layouts/footer";
 import { Hero } from "@/components/features/hero";
+import { HowItWorks } from "@/components/features/how-it-works";
 import { ShowcaseGrid } from "@/components/features/showcase-grid";
 
 // Sample aquascape data for showcase
@@ -21,6 +22,7 @@ export default function Home() {
       <Header />
       <main>
         <Hero />
+        <HowItWorks />
         <ShowcaseGrid items={showcases} />
       </main>
       <Footer />
