@@ -43,7 +43,7 @@ function ShowcaseMarquee({ items }: ShowcaseGridProps) {
 
   return (
     <div className="overflow-hidden py-4 group">
-      <div className="flex animate-[marquee_10s_linear_infinite] gap-4 group-hover:[animation-play-state:paused]">
+      <div className="flex animate-[marquee_20s_linear_infinite] gap-4 group-hover:[animation-play-state:paused]">
         {allItems.map((item, index) => (
           <Link
             key={`${item.id}-${index}`}
