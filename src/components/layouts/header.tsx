@@ -17,8 +17,8 @@ export function Header() {
           <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
         </div>
         <div className="flex items-center gap-5">
-          <Link href="/register" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Register</Link>
           <Link href="/ask-ai" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Ask AI</Link>
+          <Link href="/register" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Register</Link>
           <Link href="/login">
             <Button size="default">
               Log in
