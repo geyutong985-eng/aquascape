@@ -8,9 +8,7 @@ interface HeroContentProps {
 }
 
 export function HeroContent({ children }: HeroContentProps) {
-  // 初始化时设为 true，避免 hydration 不匹配
-  // useEffect 仅用于确保客户端挂载后更新
-  const [mounted, setMounted] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -18,10 +16,10 @@ export function HeroContent({ children }: HeroContentProps) {
 
   return (
     <div
-      className="transition-all duration-700 ease-out-expo"
+      className="transition-all duration-1000 ease-out-expo"
       style={{
         opacity: mounted ? 1 : 0,
-        transform: mounted ? "translateY(0)" : "translateY(20px)",
+        transform: mounted ? "translateY(0)" : "translateY(24px)",
       }}
     >
       {children}

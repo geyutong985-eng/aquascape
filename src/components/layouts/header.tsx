@@ -32,10 +32,10 @@ export function Header() {
         {/* Desktop Auth Buttons */}
         <div className="hidden md:flex items-center gap-5">
           <Link href="/ask-ai" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">Ask AI</Link>
-          <Link href="/register" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">Register</Link>
-          <Link href="/login">
+          <Link href="/login" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">Sign in</Link>
+          <Link href="/register">
             <Button size="default">
-              Log in
+              Sign up
             </Button>
           </Link>
         </div>
@@ -57,11 +57,11 @@ export function Header() {
               <Link href="#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>About</Link>
               <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Design</Link>
               <div className="border-t border-border/30 my-2" />
-              <Link href="/ask-ai" className="text-foreground transition-colors text-base font-normal py-2" onClick={() => setMobileMenuOpen(false)}>Ask AI</Link>
-              <Link href="/register" className="text-foreground transition-colors text-base font-normal py-2" onClick={() => setMobileMenuOpen(false)}>Register</Link>
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/ask-ai" className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2" onClick={() => setMobileMenuOpen(false)}>Ask AI</Link>
+              <Link href="/login" className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2" onClick={() => setMobileMenuOpen(false)}>Sign in</Link>
+              <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
                 <Button className="w-full">
-                  Log in
+                  Sign up
                 </Button>
               </Link>
             </div>

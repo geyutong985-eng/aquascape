@@ -1,12 +1,27 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function LoginPage() {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+      <div
+        className="w-full max-w-sm transition-all duration-1000 ease-out-expo"
+        style={{
+          opacity: mounted ? 1 : 0,
+          transform: mounted ? "translateY(0)" : "translateY(24px)",
+        }}
+      >
         {/* Logo */}
         <Link href="/" className="flex items-center gap-3 justify-center mb-8">
           <div className="w-10 h-10 rounded-full border-2 border-brand flex items-center justify-center">
