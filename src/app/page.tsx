@@ -1,11 +1,10 @@
 import { Header } from "@/components/layouts/header";
 import { Footer } from "@/components/layouts/footer";
-import { Hero } from "@/components/features/hero";
-import { HowItWorks } from "@/components/features/how-it-works";
-import { ShowcaseGrid } from "@/components/features/showcase-grid";
+import { Hero, HowItWorks, ShowcaseGrid, ValueProposition } from "@/components/features";
+import type { ShowcaseItem } from "@/types";
 
 // Sample aquascape data for showcase
-const showcases = [
+const showcases: ShowcaseItem[] = [
   { id: 1, title: "Mossy Forest", style: "Iwagumi", author: "AquaDesign", height: "tall" },
   { id: 2, title: "Jungle Valley", style: "Nature", author: "GreenLeaf", height: "short" },
   { id: 3, title: "Rocky Shore", style: "Wabi-kabi", author: "StoneAqua", height: "medium" },
@@ -24,6 +23,7 @@ export default function Home() {
         <Hero />
         <HowItWorks />
         <ShowcaseGrid items={showcases} />
+        <ValueProposition />
       </main>
       <Footer />
     </div>

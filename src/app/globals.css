@@ -172,8 +172,17 @@
   48% { color: var(--foreground); }
   100% { color: var(--foreground); }
 }
+@keyframes step-line {
+  0% { background: linear-gradient(90deg, var(--color-brand) 0%, oklch(0.85 0 0) 100%); }
+  25% { background: linear-gradient(90deg, oklch(0.85 0 0) 0%, var(--color-brand) 100%); }
+  50% { background: linear-gradient(90deg, oklch(0.85 0 0) 100%, var(--color-brand) 100%); }
+  100% { background: linear-gradient(90deg, var(--color-brand) 0%, oklch(0.85 0 0) 100%); }
+}
 .step-lights {
   animation: step-light 6s ease-in-out infinite;
+}
+.step-line {
+  animation: step-line 6s ease-in-out infinite;
 }
 .animation-delay-1 {
   animation-delay: 2s;

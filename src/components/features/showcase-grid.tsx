@@ -1,15 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-
-interface ShowcaseItem {
-  id: number;
-  title: string;
-  style: string;
-  author: string;
-  height: string;
-}
+import type { ShowcaseItem } from "@/types";
+import { ArrowRight, ArrowUpRight } from "@/components/icons";
 
 interface ShowcaseGridProps {
   items: ShowcaseItem[];
@@ -29,9 +24,7 @@ export function ShowcaseGrid({ items }: ShowcaseGridProps) {
       <div className="max-w-7xl mx-auto px-6 mt-12">
         <Link href="/gallery" className="inline-flex items-center gap-2 text-brand hover:opacity-80 transition-opacity font-medium">
           View More Designs
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+          <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     </section>
@@ -40,30 +33,39 @@ export function ShowcaseGrid({ items }: ShowcaseGridProps) {
 
 function ShowcaseMarquee({ items }: ShowcaseGridProps) {
   const allItems = [...items, ...items, ...items, ...items, ...items, ...items, ...items];
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   return (
     <div className="overflow-hidden py-4 group">
-      <div className="flex animate-[marquee_20s_linear_infinite] gap-4 group-hover:[animation-play-state:paused]">
+      <div className="flex animate-[marquee_20s_linear_infinite] gap-4" style={{ animationPlayState: hoveredId ? 'paused' : 'running' }}>
         {allItems.map((item, index) => (
-          <Link
+          <div
             key={`${item.id}-${index}`}
-            href={`/showcase/${item.id}`}
-            className="flex-shrink-0 w-64"
+            className="flex-shrink-0 w-64 relative"
+            onMouseEnter={() => setHoveredId(item.id)}
+            onMouseLeave={() => setHoveredId(null)}
           >
-            <Card className="group hover:border-brand/50 transition-colors cursor-pointer">
-              <CardContent className="p-0">
-                <div className="aspect-[4/3] bg-gradient-to-br from-brand/5 to-brand/10 flex items-center justify-center">
-                  <div className="w-12 h-12 rounded-full border border-brand/20 flex items-center justify-center">
-                    <div className="w-4 h-4 rounded-full bg-brand/40" />
+            <Link
+              href={`/showcase/${item.id}`}
+              className="block"
+            >
+              <Card className="hover:border-brand/50 transition-colors cursor-pointer relative overflow-hidden">
+                <CardContent className="p-0">
+                  <div className="aspect-[4/3] bg-gradient-to-br from-brand/5 to-brand/10">
+                    {/* 图片区域 */}
                   </div>
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-medium text-foreground">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground mt-1">{item.style} · {item.author}</p>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
+                  <div className="p-4 relative">
+                    <h3 className="text-lg font-medium text-foreground pr-12">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground mt-1">{item.style} · {item.author}</p>
+                    {/* Arrow - show when this specific item is hovered */}
+                    <div className={`absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center transition-opacity duration-300 ${hoveredId === item.id ? 'opacity-100' : 'opacity-0'}`}>
+                      <ArrowUpRight className="w-6 h-6 text-foreground" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          </div>
         ))}
       </div>
     </div>

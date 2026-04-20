@@ -1,6 +1,3 @@
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
-
 export function Hero() {
   return (
     <section className="min-h-screen flex items-center justify-center px-6 relative overflow-hidden">
@@ -32,7 +29,7 @@ export function Hero() {
   );
 }
 
-import { HeroContent } from "./hero-content";
+import { HeroContent } from "@/components/sections/hero-content";
 import { WaveDecoration } from "@/components/decorations/wave-decoration";
 import { BubbleBackground } from "@/components/decorations/bubble-background";
 import { FeatureTags } from "./feature-tags";

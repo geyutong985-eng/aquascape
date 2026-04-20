@@ -4,8 +4,8 @@ import { Card, CardContent } from "@/components/ui/card";
 
 export function HowItWorks() {
   return (
-    <section className="py-24 bg-muted/20 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-24 bg-background/60 dark:bg-zinc-900/80 px-6">
+      <div className="max-w-7xl mx-auto">
         <h2 className="heading-2 text-foreground mb-16 text-center">
           Your Aquascape in <span className="text-brand text-5xl md:text-6xl font-light">3</span> Steps
         </h2>
@@ -24,7 +24,7 @@ export function HowItWorks() {
                 </div>
               </div>
 
-              <div className="flex-1 h-px bg-border hidden md:block" />
+              <div className="flex-1 h-px bg-border/60 hidden md:block" />
             </div>
 
             <Card className="bg-transparent border-none shadow-none mt-4">
@@ -38,7 +38,7 @@ export function HowItWorks() {
           {/* Step 02 */}
           <div className="flex flex-col items-center text-center flex-1 group">
             <div className="flex items-center w-full">
-              <div className="flex-1 h-px bg-border hidden md:block" />
+              <div className="flex-1 h-px bg-border/60 hidden md:block" />
 
               <div className="px-4">
                 <div className="text-8xl font-semibold tracking-wider mb-2 text-foreground step-lights animation-delay-1">
@@ -46,7 +46,7 @@ export function HowItWorks() {
                 </div>
               </div>
 
-              <div className="flex-1 h-px bg-border hidden md:block" />
+              <div className="flex-1 h-px bg-border/60 hidden md:block" />
             </div>
 
             <Card className="bg-transparent border-none shadow-none mt-4">
@@ -60,7 +60,7 @@ export function HowItWorks() {
           {/* Step 03 */}
           <div className="flex flex-col items-center text-center flex-1 group">
             <div className="flex items-center w-full">
-              <div className="flex-1 h-px bg-border hidden md:block" />
+              <div className="flex-1 h-px bg-border/60 hidden md:block" />
 
               <div className="px-4">
                 <div className="text-8xl font-semibold tracking-wider mb-2 text-foreground step-lights animation-delay-2">
