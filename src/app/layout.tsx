@@ -1,20 +1,6 @@
 import type { Metadata } from "next";
-import { Young_Serif, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
-
-// Young Serif - 圆润有趣，有个性
-const youngSerif = Young_Serif({
-  subsets: ["latin"],
-  variable: "--font-heading",
-  weight: "400",
-});
-
-const sourceSans3 = Source_Sans_3({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600"],
-});
 
 export const metadata: Metadata = {
   title: "Aquascape - Build Your Dream Aquarium",
@@ -29,9 +15,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full", "antialiased", youngSerif.variable, sourceSans3.variable)}
+      className={cn("h-full", "antialiased")}
     >
-      <body className="min-h-full flex flex-col font-sans">{children}</body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
