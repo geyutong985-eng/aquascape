@@ -2,16 +2,52 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { createSupabaseClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+
+    const supabase = createSupabaseClient();
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) {
+      // Supabase returns "Invalid login credentials" for both:
+      // - user doesn't exist
+      // - user exists but password is wrong
+      // We show a friendly message but not which one
+      if (signInError.message.toLowerCase().includes("invalid")) {
+        setError("Invalid email or password. Please try again.");
+      } else {
+        setError(signInError.message);
+      }
+      setLoading(false);
+    } else {
+      router.push("/");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -38,18 +74,38 @@ export default function LoginPage() {
             Enter your details to sign in
           </p>
 
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" />
+              <Input
+                id="email"
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" placeholder="••••••••" />
+              <Input
+                id="password"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
             </div>
 
-            <Button className="w-full">Sign in</Button>
+            {error && (
+              <p className="text-sm text-destructive">{error}</p>
+            )}
+
+            <Button className="w-full" disabled={loading}>
+              {loading ? "Signing in..." : "Sign in"}
+            </Button>
           </form>
 
           <div className="mt-6 text-center text-sm">
