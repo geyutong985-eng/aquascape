@@ -6,6 +6,7 @@
 import { forwardRef } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  ArrowLeftIcon,
   ArrowRightIcon,
   ArrowDownIcon,
   ArrowDiagonalIcon,
@@ -19,9 +20,25 @@ import {
   UserIcon,
   PenToolIcon,
   MagicWandIcon,
+  FavouriteIcon,
+  LocationIcon,
+  Settings01Icon,
+  LogoutIcon,
+  CheckmarkCircle01Icon,
+  Delete01Icon,
+  Edit01Icon,
+  Add01Icon,
+  MailIcon,
+  LockIcon,
+  ArchiveIcon,
 } from "@hugeicons/core-free-icons";
 
 // ============ 预定义图标导出 ============
+
+export const ArrowLeft = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={ArrowLeftIcon} {...props} />
+);
+ArrowLeft.displayName = "ArrowLeft";
 
 export const ArrowRight = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
   <HugeiconsIcon ref={ref} icon={ArrowRightIcon} {...props} />
@@ -108,3 +125,58 @@ export const DoubleArrowRight = forwardRef<SVGSVGElement, { className?: string }
   <HugeiconsIcon ref={ref} icon={ArrowRightIcon} {...props} />
 );
 DoubleArrowRight.displayName = "DoubleArrowRight";
+
+export const Heart = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={FavouriteIcon} {...props} />
+);
+Heart.displayName = "Heart";
+
+export const MapPin = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={LocationIcon} {...props} />
+);
+MapPin.displayName = "MapPin";
+
+export const Settings = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={Settings01Icon} {...props} />
+);
+Settings.displayName = "Settings";
+
+export const LogOut = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={LogoutIcon} {...props} />
+);
+LogOut.displayName = "LogOut";
+
+export const Box = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={ArchiveIcon} {...props} />
+);
+Box.displayName = "Box";
+
+export const Check = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={CheckmarkCircle01Icon} {...props} />
+);
+Check.displayName = "Check";
+
+export const Trash = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={Delete01Icon} {...props} />
+);
+Trash.displayName = "Trash";
+
+export const Edit = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={Edit01Icon} {...props} />
+);
+Edit.displayName = "Edit";
+
+export const Plus = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={Add01Icon} {...props} />
+);
+Plus.displayName = "Plus";
+
+export const Mail = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={MailIcon} {...props} />
+);
+Mail.displayName = "Mail";
+
+export const Lock = forwardRef<SVGSVGElement, { className?: string }>((props, ref) =>
+  <HugeiconsIcon ref={ref} icon={LockIcon} {...props} />
+);
+Lock.displayName = "Lock";

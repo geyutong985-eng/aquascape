@@ -15,7 +15,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Aquascape - Build Your Dream Aquarium",
+  title: "Finscape - Build Your Dream Aquarium",
   description: "Design stunning aquascapes with AI assistance. Visualize in 3D. Print your creation with precision.",
 };
 

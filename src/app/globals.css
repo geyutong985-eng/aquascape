@@ -75,8 +75,8 @@
   --chart-4: oklch(0.532 0.157 131.589);
   --chart-5: oklch(0.453 0.124 130.933);
   /* Brand color - blue-teal like water */
-  --brand: oklch(0.40 0.15 190);
-  --brand-muted: oklch(0.91 0.05 190);
+  --brand: oklch(0.25 0.15 195);
+  --brand-muted: oklch(0.85 0.08 195);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
