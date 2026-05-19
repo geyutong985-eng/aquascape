@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Young_Serif, DM_Sans } from "next/font/google";
+import { Young_Serif, Source_Sans_3 } from "next/font/google";
 import "./globals.css";
 
 const youngSerif = Young_Serif({
@@ -8,7 +8,7 @@ const youngSerif = Young_Serif({
   weight: "400",
 });
 
-const dmSans = DM_Sans({
+const sourceSans3 = Source_Sans_3({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["400", "500", "600"],
@@ -25,10 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`h-full antialiased ${youngSerif.variable} ${dmSans.variable}`}
-    >
+    <html lang="en" className={`h-full antialiased ${youngSerif.variable} ${sourceSans3.variable}`}>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

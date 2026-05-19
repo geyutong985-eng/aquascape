@@ -23,6 +23,14 @@
 - 页面放 `src/app/`
 - 添加组件：`pnpm dlx shadcn@latest add <组件名>`
 
+## 品牌标识
+
+- **品牌名**：Finscape
+- **主题色**：RGB(11, 94, 97) ≈ oklch(0.35 0.1 195)
+- 定义于 `src/app/globals.css` 中的 `--brand` 变量
+- 字体：Young Serif（标题）、Source Sans 3（正文）
+- **Logo 对齐**：个人页 sidebar 使用 `pt-4` 与首页 header 对齐
+
 ## 禁止事项
 
 - 不要修改 `.obsidian` 相关文件（这是 Obsidian 配置，与项目无关）
