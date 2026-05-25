@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { User, Box, Heart, MapPin, Settings, LogOut, Menu, Close } from "@/components/icons";
 import { createSupabaseClient } from "@/lib/supabase/client";
+import { UserAvatar } from "@/components/ui/user-avatar";
 
 const navItems = [
   { href: "/profile", label: "个人中心", icon: User },
@@ -18,6 +20,7 @@ const navItems = [
 
 export function ProfileSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [user, setUser] = useState<{ email?: string; user_metadata?: { name?: string } } | null>(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -37,9 +40,10 @@ export function ProfileSidebar() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleSignOut = async () => {
+  const handleSignOut = async (onSuccess?: () => void) => {
     const supabase = createSupabaseClient();
     await supabase.auth.signOut();
+    onSuccess?.();
   };
 
   const userName = user?.user_metadata?.name || user?.email?.split("@")[0] || "用户";
@@ -82,9 +86,7 @@ export function ProfileSidebar() {
         </div>
           <div className="p-4 border-b">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                <User className="w-5 h-5 text-foreground" />
-              </div>
+              <UserAvatar name={userName} email={user?.email} className="w-10 h-10" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{userName}</p>
                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
@@ -93,7 +95,7 @@ export function ProfileSidebar() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-2">
+          <nav className="flex-1 px-3 py-4">
             {navItems.map((item) => {
               const isActive = pathname === item.href ||
                 (item.href !== "/profile" && pathname.startsWith(item.href));
@@ -104,10 +106,10 @@ export function ProfileSidebar() {
                   href={item.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={`
-                    flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors
+                    flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-all duration-200
                     ${isActive
                       ? "bg-primary/10 text-foreground font-medium"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
                     }
                   `}
                 >
@@ -120,16 +122,25 @@ export function ProfileSidebar() {
 
           {/* Sign out */}
           <div className="p-2 border-t">
-            <button
-              onClick={() => {
-                handleSignOut();
-                setMobileMenuOpen(false);
-              }}
-              className="flex items-center gap-3 w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-              退出登录
-            </button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button className="flex items-center gap-3 w-full px-3 py-2 rounded-md text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+                  <LogOut className="w-4 h-4" />
+                  退出登录
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>确定要退出登录吗？</AlertDialogTitle>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
+                  <AlertDialogAction onClick={() => { handleSignOut(() => { setMobileMenuOpen(false); router.push("/"); }); }}>
+                    确定退出
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
       </aside>
 

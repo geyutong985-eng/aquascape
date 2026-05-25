@@ -8,7 +8,7 @@ export default function ProfileLayout({
   return (
     <div className="min-h-screen flex">
       <ProfileSidebar />
-      <main className="flex-1 md:ml-56 p-6">
+      <main className="flex-1 md:ml-56 p-4 md:p-8">
         {children}
       </main>
     </div>
