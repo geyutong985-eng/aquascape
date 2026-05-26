@@ -1,4 +1,3 @@
-import { ProfileSidebar } from "@/components/layouts/profile-sidebar";
 import { ProfileList } from "../components/list";
 
 // 临时空数据，等 Supabase 完成后接入
@@ -8,14 +7,11 @@ const favorites: { id: string; title: string; description: string; date: string;
 
 export default function FavoritesPage() {
   return (
-    <div className="min-h-screen">
-      <ProfileSidebar />
-      <ProfileList
-        title="我的收藏"
-        description="你收藏的造景案例"
-        items={favorites}
-        emptyText="还没有收藏内容"
-      />
-    </div>
+    <ProfileList
+      title="我的收藏"
+      description="你收藏的造景案例"
+      items={favorites}
+      emptyText="还没有收藏内容"
+    />
   );
 }
