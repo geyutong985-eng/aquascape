@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { BrandLogo } from "@/components/layouts";
 
 interface RegisterSuccessPageProps {
   searchParams: Promise<{ email?: string }>;
@@ -14,12 +15,9 @@ export default async function RegisterSuccessPage(props: RegisterSuccessPageProp
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-sm text-center">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 justify-center mb-8">
-          <div className="w-10 h-10 rounded-full border-2 border-brand flex items-center justify-center">
-            <div className="w-3.5 h-3.5 rounded-full bg-brand" />
-          </div>
-        </Link>
+        <div className="mb-8">
+          <BrandLogo centered />
+        </div>
 
         {/* Card */}
         <div className="bg-card rounded-xl border p-8">

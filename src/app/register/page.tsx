@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BrandLogo } from "@/components/layouts";
 import { createSupabaseClient } from "@/lib/supabase/client";
 
 export default function RegisterPage() {
@@ -112,11 +113,9 @@ export default function RegisterPage() {
           transform: mounted ? "translateY(0)" : "translateY(24px)",
         }}
       >
-        <Link href="/" className="flex items-center gap-3 justify-center mb-8">
-          <div className="w-10 h-10 rounded-full border-2 border-brand flex items-center justify-center">
-            <div className="w-3.5 h-3.5 rounded-full bg-brand" />
-          </div>
-        </Link>
+        <div className="mb-8">
+          <BrandLogo centered />
+        </div>
 
         <div className="bg-card rounded-xl border p-8">
           <h1 className="text-2xl font-medium text-foreground text-center mb-2">
