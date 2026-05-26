@@ -26,14 +26,21 @@ export function ProfileList({ title, description, items, emptyText = "暂无内�
   return (
     <div className="max-w-3xl">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/profile" className="p-2 hover:bg-accent rounded-md transition-colors">
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-medium text-foreground">{title}</h1>
-          {description && <p className="text-sm text-muted-foreground">{description}</p>}
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-4">
+          <Link href="/profile" className="p-2 hover:bg-accent rounded-md transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-medium text-foreground">{title}</h1>
+            {description && <p className="text-sm text-muted-foreground">{description}</p>}
+          </div>
         </div>
+        {viewAllHref ? (
+          <Link href={viewAllHref} className="text-sm text-muted-foreground transition-colors hover:text-foreground">
+            查看全部
+          </Link>
+        ) : null}
       </div>
 
       {/* List */}
@@ -52,6 +59,7 @@ export function ProfileList({ title, description, items, emptyText = "暂无内�
               {/* Thumbnail */}
               {item.image && (
                 <div className="w-16 h-16 rounded-lg bg-muted flex-shrink-0 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                 </div>
               )}

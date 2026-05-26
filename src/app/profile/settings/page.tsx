@@ -61,7 +61,6 @@ export default function SettingsPage() {
 
   // Determine button state
   const hasChanges = name !== savedName;
-  const buttonDisabled = !hasChanges || saving;
 
   const handleSignOut = async () => {
     const supabase = createSupabaseClient();
@@ -114,6 +113,7 @@ export default function SettingsPage() {
             <Button
               onClick={hasChanges ? handleSave : undefined}
               variant={hasChanges ? "default" : "outline"}
+              disabled={!hasChanges || saving}
             >
               {saving ? "保存中..." : hasChanges ? "保存" : "已保存"}
             </Button>

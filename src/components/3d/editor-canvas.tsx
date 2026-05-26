@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, type ElementRef, useEffect, useMemo, useRef, useState } from "react"
+import { Suspense, type ElementRef, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Canvas, ThreeEvent, useThree } from "@react-three/fiber"
 import { ContactShadows, OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei"
 import * as THREE from "three"
@@ -47,7 +47,6 @@ interface Props {
 }
 
 const SCENE_SCALE = 0.8
-const BASE_RADIUS = 4.8
 const FLOOR_Y = 1.25
 
 const colorMap: Record<string, string> = {
@@ -532,7 +531,7 @@ function TransformGizmo({
   const plane = useMemo(() => new THREE.Plane(), [])
   const hit = useMemo(() => new THREE.Vector3(), [])
   const position = [material.x, material.y, material.z] as [number, number, number]
-  const applyScaleDrag = (clientY: number, activeDrag: NonNullable<typeof drag>) => {
+  const applyScaleDrag = useCallback((clientY: number, activeDrag: NonNullable<typeof drag>) => {
     if (!onMaterialUpdate || activeDrag.axis !== "scale") return
     const clientDelta = (activeDrag.startClientY ?? clientY) - clientY
     const ratio = THREE.MathUtils.clamp(1 + clientDelta * 0.008, 0.35, 3.2)
@@ -544,7 +543,7 @@ function TransformGizmo({
       z: clamped.z,
       scale: clamped.scale,
     })
-  }
+  }, [material.id, onMaterialUpdate, tankSize])
 
   useEffect(() => {
     if (!drag || drag.axis !== "scale") return
@@ -564,7 +563,7 @@ function TransformGizmo({
       window.removeEventListener("pointerup", handleUp)
       window.removeEventListener("pointercancel", handleUp)
     }
-  }, [drag, onDragStateChange, onMaterialUpdate, tankSize])
+  }, [applyScaleDrag, drag, onDragStateChange])
 
   const beginDrag = (axis: Axis, event: ThreeEvent<PointerEvent>) => {
     stopEditorGesture(event)
@@ -655,7 +654,7 @@ function Scene({
     startMaterial: Material
   }>(null)
   const { camera, pointer, raycaster } = useThree()
-  const dragPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR_Y), [])
+  const dragPlaneRef = useRef(new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR_Y))
   const dragPoint = useMemo(() => new THREE.Vector3(), [])
   const l = tankSize.length * SCENE_SCALE
   const w = tankSize.width * SCENE_SCALE
@@ -672,6 +671,7 @@ function Scene({
     captureEditorPointer(event)
     onMaterialSelect(material.id)
     if (transformMode !== "translate") return
+    const dragPlane = dragPlaneRef.current
     dragPlane.constant = -material.y
     raycaster.setFromCamera(pointer, camera)
     raycaster.ray.intersectPlane(dragPlane, dragPoint)
@@ -686,7 +686,7 @@ function Scene({
         if (!objectDrag || !onMaterialUpdate) return
         stopEditorGesture(event)
         raycaster.setFromCamera(pointer, camera)
-        const point = raycaster.ray.intersectPlane(dragPlane, dragPoint)
+        const point = raycaster.ray.intersectPlane(dragPlaneRef.current, dragPoint)
         if (!point) return
         const delta = dragPoint.clone().sub(objectDrag.startPoint)
         const clamped = clampMaterial(objectDrag.startMaterial, tankSize, {
