@@ -21,7 +21,7 @@ const navItems = [
 export function ProfileSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{ email?: string; user_metadata?: { name?: string } } | null>(null);
+  const [user, setUser] = useState<{ email?: string; user_metadata?: { name?: string; avatar_url?: string; picture?: string } } | null>(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -47,6 +47,7 @@ export function ProfileSidebar() {
   };
 
   const userName = user?.user_metadata?.name || user?.email?.split("@")[0] || "用户";
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
 
   return (
     <>
@@ -86,7 +87,7 @@ export function ProfileSidebar() {
         </div>
           <div className="p-4 border-b">
             <div className="flex items-center gap-3">
-              <UserAvatar name={userName} email={user?.email} className="w-10 h-10" />
+              <UserAvatar name={userName} email={user?.email} avatarUrl={avatarUrl} className="w-10 h-10" />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">{userName}</p>
                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>

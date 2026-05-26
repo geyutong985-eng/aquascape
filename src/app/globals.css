@@ -220,3 +220,29 @@
 .animate-ripple {
   animation: ripple 2s ease-out infinite;
 }
+
+.membership-billing .monthly-price {
+  display: none;
+}
+
+.membership-billing:has(.billing-annual:checked) .membership-toggle .annual-toggle,
+.membership-billing:has(.billing-monthly:checked) .membership-toggle .monthly-toggle {
+  background: var(--brand);
+  color: oklch(0.985 0.005 180);
+}
+
+.membership-billing:has(.billing-annual:checked) .membership-toggle .monthly-toggle,
+.membership-billing:has(.billing-monthly:checked) .membership-toggle .annual-toggle {
+  color: var(--muted-foreground);
+}
+
+.membership-billing:has(.billing-monthly:checked) .membership-pricing .annual-price,
+.membership-billing:has(.billing-monthly:checked) .membership-pricing .annual-only {
+  display: none;
+}
+
+.membership-billing:has(.billing-monthly:checked) .membership-pricing .monthly-price {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+}

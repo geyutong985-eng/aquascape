@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 interface UserAvatarProps {
   name: string;
   email?: string;
+  avatarUrl?: string;
   className?: string;
 }
 
@@ -38,7 +39,7 @@ const colors = [
   "bg-indigo-600",
 ];
 
-export function UserAvatar({ name, email, className }: UserAvatarProps) {
+export function UserAvatar({ name, email, avatarUrl, className }: UserAvatarProps) {
   const id = (name || email || "user").toLowerCase();
   const hash = getHash(id);
   const initials = getInitials(name, email);
@@ -47,12 +48,24 @@ export function UserAvatar({ name, email, className }: UserAvatarProps) {
   return (
     <div
       className={cn(
-        "w-10 h-10 rounded-full flex items-center justify-center text-white font-medium text-sm",
+        "relative w-10 h-10 overflow-hidden rounded-full flex items-center justify-center text-white font-medium text-sm",
         colorClass,
         className
       )}
     >
       {initials}
+      {avatarUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={avatarUrl}
+          alt={name ? `${name} 的头像` : "用户头像"}
+          className="absolute inset-0 h-full w-full object-cover"
+          referrerPolicy="no-referrer"
+          onError={(event) => {
+            event.currentTarget.remove();
+          }}
+        />
+      ) : null}
     </div>
   );
 }

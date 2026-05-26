@@ -41,9 +41,6 @@ export default async function GalleryDetailPage({ params }: GalleryDetailPagePro
             <div className="flex flex-wrap items-center gap-3">
               <GalleryBackLink />
             </div>
-            <Button asChild variant="brand">
-              <Link href="/gallery">去 Gallery</Link>
-            </Button>
           </nav>
 
           <section className="grid items-stretch gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">
