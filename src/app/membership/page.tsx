@@ -148,7 +148,7 @@ export default function MembershipPage() {
                 <article
                   key={plan.name}
                   className={`flex min-h-[600px] flex-col rounded-2xl border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-lg ${
-                    plan.tone === "popular" ? "border-brand shadow-brand/10" : "border-border"
+                    emphasized ? "border-brand shadow-brand/10" : "border-border"
                   }`}
                 >
                   <div className="flex min-h-[30px] items-center justify-between gap-3">
