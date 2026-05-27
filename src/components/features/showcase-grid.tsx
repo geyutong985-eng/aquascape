@@ -46,7 +46,7 @@ function ShowcaseMarquee({ items }: ShowcaseGridProps) {
             onMouseEnter={() => setHoveredId(item.id)}
             onMouseLeave={() => setHoveredId(null)}
           >
-            <Link href={`/gallery/${item.id}`} className="block">
+            <Link href={`/gallery/${item.id}?from=home`} className="block">
               <Card className="hover:border-brand/50 transition-colors cursor-pointer relative overflow-hidden">
                 <CardContent className="p-0">
                   <DesignVisual image={item.coverImage ?? "minimal-cloud"} title={item.title} colors={item.colors} className="aspect-[4/3]" />

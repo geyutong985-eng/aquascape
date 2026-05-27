@@ -7,14 +7,17 @@ import { getDesignById, getMaterialInfo, publicDesigns } from "@/lib/designs";
 
 interface GalleryDetailPageProps {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ from?: string }>;
 }
 
 export function generateStaticParams() {
   return publicDesigns.map((design) => ({ id: design.id }));
 }
 
-export default async function GalleryDetailPage({ params }: GalleryDetailPageProps) {
+export default async function GalleryDetailPage({ params, searchParams }: GalleryDetailPageProps) {
   const { id } = await params;
+  const { from } = await searchParams;
+  const showGalleryLink = from === "home";
   const design = getDesignById(id);
 
   if (!design) {
@@ -41,6 +44,11 @@ export default async function GalleryDetailPage({ params }: GalleryDetailPagePro
             <div className="flex flex-wrap items-center gap-3">
               <GalleryBackLink />
             </div>
+            {showGalleryLink ? (
+              <Button asChild variant="brand">
+                <Link href="/gallery">去 Gallery</Link>
+              </Button>
+            ) : null}
           </nav>
 
           <section className="grid items-stretch gap-10 lg:grid-cols-[minmax(0,1fr)_380px]">

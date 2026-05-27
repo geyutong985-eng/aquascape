@@ -43,6 +43,7 @@ export function Header() {
   const userName = user?.user_metadata?.name || user?.email?.split("@")[0] || "User";
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
   const isGallery = pathname?.startsWith("/gallery");
+  const isMembership = pathname?.startsWith("/membership");
   const navLinkClass = (active = false, extra = "") =>
     `${active ? "text-foreground" : "text-muted-foreground hover:text-foreground"} transition-colors text-base font-semibold ${extra}`;
 
@@ -67,7 +68,7 @@ export function Header() {
         {/* Desktop Navigation - left aligned after logo */}
         <div className="hidden md:flex items-center gap-6 ml-8">
           <Link href="/gallery" className={navLinkClass(isGallery)}>Gallery</Link>
-          <Link href="/membership" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Membership</Link>
+          <Link href="/membership" className={navLinkClass(isMembership)}>Membership</Link>
           <Link href="/#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">About</Link>
           <Link href="/editor" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
         </div>
@@ -116,7 +117,7 @@ export function Header() {
           <div className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border/30 md:hidden">
             <div className="flex flex-col p-4 gap-4">
               <Link href="/gallery" className={navLinkClass(isGallery, "py-2")} onClick={() => setMobileMenuOpen(false)}>Gallery</Link>
-              <Link href="/membership" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Membership</Link>
+              <Link href="/membership" className={navLinkClass(isMembership, "py-2")} onClick={() => setMobileMenuOpen(false)}>Membership</Link>
               <Link href="/#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>About</Link>
               <Link href="/editor" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Design</Link>
               <div className="border-t border-border/30 my-2" />

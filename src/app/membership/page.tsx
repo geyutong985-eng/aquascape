@@ -14,7 +14,7 @@ const plans = [
     audience: "适合第一次尝试个性化鱼缸造景的用户。",
     annualPrice: "¥0",
     monthlyPrice: "¥0",
-    cta: "选择",
+    cta: "开始免费定制",
     href: "/checkout?plan=basic",
     tone: "standard",
     highlight: "",
@@ -34,7 +34,7 @@ const plans = [
     audience: "适合希望用 AI 更快得到完整造景方向的玩家。",
     annualPrice: "¥69",
     monthlyPrice: "¥9",
-    cta: "选择",
+    cta: "选择 Studio",
     href: "/checkout?plan=studio",
     tone: "popular",
     highlight: "常用选择",
@@ -56,7 +56,7 @@ const plans = [
     audience: "适合追求联名系列、拓展包和设计师合作款的深度玩家。",
     annualPrice: "¥99",
     monthlyPrice: "¥15",
-    cta: "选择",
+    cta: "选择 Collectors",
     href: "/checkout?plan=collectors",
     tone: "premium",
     highlight: "合作系列权益",
@@ -108,7 +108,6 @@ const faqs = [
 
 export default function MembershipPage() {
   const [billing, setBilling] = useState<"monthly" | "annual">("annual");
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-background">
@@ -166,28 +165,15 @@ export default function MembershipPage() {
           <div className="membership-pricing grid gap-5 lg:grid-cols-3">
             {plans.map((plan) => {
               const emphasized = plan.tone === "popular" || plan.tone === "premium";
-              const selected = selectedPlan === plan.id;
               const checkoutHref = `${plan.href}&billing=${billing}`;
 
               return (
                 <article
                   key={plan.name}
-                  role="button"
-                  tabIndex={0}
-                  aria-pressed={selected}
-                  onClick={() => setSelectedPlan(plan.id)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      event.preventDefault();
-                      setSelectedPlan(plan.id);
-                    }
-                  }}
-                  className={`flex min-h-[600px] cursor-pointer flex-col rounded-2xl border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
-                    selected
-                      ? "border-brand bg-brand/5 shadow-lg shadow-brand/10 ring-2 ring-brand/20"
-                      : emphasized
-                        ? "border-brand shadow-brand/10"
-                        : "border-border"
+                  className={`flex min-h-[600px] flex-col rounded-2xl border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-lg ${
+                    emphasized
+                      ? "border-brand shadow-brand/10"
+                      : "border-border"
                   }`}
                 >
                   <div className="flex min-h-[30px] items-center justify-between gap-3">
@@ -239,9 +225,9 @@ export default function MembershipPage() {
                     ))}
                   </ul>
 
-                  <Button asChild variant={selected || emphasized ? "brand" : "outline"} className="mt-auto">
-                    <Link href={checkoutHref} onClick={(event) => event.stopPropagation()}>
-                      {selected ? "前往付款" : plan.cta}
+                  <Button asChild variant={emphasized ? "brand" : "outline"} className="mt-auto">
+                    <Link href={checkoutHref}>
+                      {plan.cta}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
