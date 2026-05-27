@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, Sparkles } from "@/components/icons";
 import { Footer, Header } from "@/components/layouts";
@@ -5,13 +8,14 @@ import { Button } from "@/components/ui/button";
 
 const plans = [
   {
+    id: "basic",
     name: "Basic",
     cnName: "基础定制",
     audience: "适合第一次尝试个性化鱼缸造景的用户。",
     annualPrice: "¥0",
     monthlyPrice: "¥0",
     cta: "开始免费定制",
-    href: "/editor",
+    href: "/checkout?plan=basic",
     tone: "standard",
     highlight: "",
     savings: "",
@@ -24,13 +28,14 @@ const plans = [
     ],
   },
   {
+    id: "studio",
     name: "Studio",
     cnName: "高级个性化",
     audience: "适合希望用 AI 更快得到完整造景方向的玩家。",
     annualPrice: "¥69",
     monthlyPrice: "¥9",
     cta: "选择 Studio",
-    href: "/editor?plan=studio",
+    href: "/checkout?plan=studio",
     tone: "popular",
     highlight: "常用选择",
     savings: "年付省 ¥39",
@@ -45,13 +50,14 @@ const plans = [
     ],
   },
   {
+    id: "collectors",
     name: "Collectors",
     cnName: "旗舰全能档",
     audience: "适合追求联名系列、拓展包和设计师合作款的深度玩家。",
     annualPrice: "¥99",
     monthlyPrice: "¥15",
     cta: "选择 Collectors",
-    href: "/editor?plan=collectors",
+    href: "/checkout?plan=collectors",
     tone: "premium",
     highlight: "合作系列权益",
     savings: "年付省 ¥81",
@@ -101,6 +107,9 @@ const faqs = [
 ];
 
 export default function MembershipPage() {
+  const [billing, setBilling] = useState<"monthly" | "annual">("annual");
+  const [selectedPlan, setSelectedPlan] = useState("collectors");
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -121,8 +130,22 @@ export default function MembershipPage() {
         </section>
 
         <section className="membership-billing py-8">
-          <input id="billing-annual" className="billing-annual sr-only" type="radio" name="billing-cycle" defaultChecked />
-          <input id="billing-monthly" className="billing-monthly sr-only" type="radio" name="billing-cycle" />
+          <input
+            id="billing-annual"
+            className="billing-annual sr-only"
+            type="radio"
+            name="billing-cycle"
+            checked={billing === "annual"}
+            onChange={() => setBilling("annual")}
+          />
+          <input
+            id="billing-monthly"
+            className="billing-monthly sr-only"
+            type="radio"
+            name="billing-cycle"
+            checked={billing === "monthly"}
+            onChange={() => setBilling("monthly")}
+          />
 
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-col gap-2 lg:flex-row lg:items-baseline lg:gap-4">
@@ -143,12 +166,28 @@ export default function MembershipPage() {
           <div className="membership-pricing grid gap-5 lg:grid-cols-3">
             {plans.map((plan) => {
               const emphasized = plan.tone === "popular" || plan.tone === "premium";
+              const selected = selectedPlan === plan.id;
+              const checkoutHref = `${plan.href}&billing=${billing}`;
 
               return (
                 <article
                   key={plan.name}
-                  className={`flex min-h-[600px] flex-col rounded-2xl border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-lg ${
-                    emphasized ? "border-brand shadow-brand/10" : "border-border"
+                  role="button"
+                  tabIndex={0}
+                  aria-pressed={selected}
+                  onClick={() => setSelectedPlan(plan.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      setSelectedPlan(plan.id);
+                    }
+                  }}
+                  className={`flex min-h-[600px] cursor-pointer flex-col rounded-2xl border bg-card p-6 transition-all hover:-translate-y-1 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                    selected
+                      ? "border-brand bg-brand/5 shadow-lg shadow-brand/10 ring-2 ring-brand/20"
+                      : emphasized
+                        ? "border-brand shadow-brand/10"
+                        : "border-border"
                   }`}
                 >
                   <div className="flex min-h-[30px] items-center justify-between gap-3">
@@ -161,6 +200,9 @@ export default function MembershipPage() {
                     )}
                     {plan.savings ? (
                       <span className="annual-only rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">{plan.savings}</span>
+                    ) : null}
+                    {selected ? (
+                      <span className="rounded-full bg-brand px-3 py-1 text-xs font-medium text-white">已选择</span>
                     ) : null}
                   </div>
 
@@ -200,9 +242,9 @@ export default function MembershipPage() {
                     ))}
                   </ul>
 
-                  <Button asChild variant={emphasized ? "brand" : "outline"} className="mt-auto">
-                    <Link href={plan.href}>
-                      {plan.cta}
+                  <Button asChild variant={selected || emphasized ? "brand" : "outline"} className="mt-auto">
+                    <Link href={checkoutHref} onClick={(event) => event.stopPropagation()}>
+                      {selected ? "前往付款" : plan.cta}
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>
