@@ -201,9 +201,6 @@ export default function MembershipPage() {
                     {plan.savings ? (
                       <span className="annual-only rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">{plan.savings}</span>
                     ) : null}
-                    {selected ? (
-                      <span className="rounded-full bg-brand px-3 py-1 text-xs font-medium text-white">已选择</span>
-                    ) : null}
                   </div>
 
                   <div className="mt-6">
