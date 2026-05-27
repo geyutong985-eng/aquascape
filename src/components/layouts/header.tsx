@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Menu, Close, User } from "@/components/icons";
-import { createSupabaseClient } from "@/lib/supabase/client";
+import { createOptionalSupabaseClient } from "@/lib/supabase/client";
 
 export function Header() {
   const router = useRouter();
@@ -14,7 +14,13 @@ export function Header() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createSupabaseClient();
+    const supabase = createOptionalSupabaseClient();
+
+    if (!supabase) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
 
     // First try to get the session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -32,8 +38,8 @@ export function Header() {
   }, []);
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseClient();
-    await supabase.auth.signOut();
+    const supabase = createOptionalSupabaseClient();
+    await supabase?.auth.signOut();
     setUser(null);
     router.push("/");
   };
@@ -62,7 +68,7 @@ export function Header() {
         <div className="hidden md:flex items-center gap-6 ml-8">
           <Link href="#showcase" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Gallery</Link>
           <Link href="#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">About</Link>
-          <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
+          <Link href="/editor" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
         </div>
 
         {/* Spacer */}
@@ -112,7 +118,7 @@ export function Header() {
             <div className="flex flex-col p-4 gap-4">
               <Link href="#showcase" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Gallery</Link>
               <Link href="#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>About</Link>
-              <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Design</Link>
+              <Link href="/editor" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Design</Link>
               <div className="border-t border-border/30 my-2" />
               <Link href="/ask-ai" className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2" onClick={() => setMobileMenuOpen(false)}>Ask AI</Link>
 

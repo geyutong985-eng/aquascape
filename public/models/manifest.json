@@ -61,7 +61,7 @@
         { "id": "single-large-block", "name": "单体大块", "path": "/models/minimal-modern/single-large-block/model.glb" },
         { "id": "hollow-sculpture", "name": "留洞雕塑", "path": "/models/minimal-modern/hollow-sculpture/model.glb" },
         { "id": "curved-surface-block", "name": "曲面体块", "path": "/models/minimal-modern/curved-surface-block/model.glb" },
-        { "id": "floating-block", "name": "悬浮块体", "path": "/models/minimal-modern/floating-block/model.glb" }
+        { "id": "floating-block", "name": "悬浮体块", "path": "/models/minimal-modern/floating-block/model.glb" }
       ]
     }
   ]

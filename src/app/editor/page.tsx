@@ -94,10 +94,10 @@ const styleGroups = [
   {
     name: "极简现代",
     models: [
-      { name: "单体大块", tags: ["躲藏", "堆叠"], price: 88 },
-      { name: "留洞雕塑", tags: ["穿行", "点缀"], price: 108 },
-      { name: "曲面体块", tags: ["点缀", "堆叠"], price: 94, modelPath: "/models/minimal-modern/curved-surface-block/model.glb" },
-      { name: "悬浮块体", tags: ["悬挂", "点缀"], price: 112 },
+      { name: "单体大块", tags: ["躲藏", "堆叠"], price: 88, modelPath: "/models/minimal-modern/single-large-block/model.glb", previewImage: "/models/minimal-modern/single-large-block/preview.png" },
+      { name: "留洞雕塑", tags: ["穿行", "点缀"], price: 108, modelPath: "/models/minimal-modern/hollow-sculpture/model.glb", previewImage: "/models/minimal-modern/hollow-sculpture/preview.png" },
+      { name: "曲面体块", tags: ["点缀", "堆叠"], price: 94, modelPath: "/models/minimal-modern/curved-surface-block/model.glb", previewImage: "/models/minimal-modern/curved-surface-block/preview.png" },
+      { name: "悬浮体块", tags: ["悬挂", "点缀"], price: 112, modelPath: "/models/minimal-modern/floating-block/model.glb", previewImage: "/models/minimal-modern/floating-block/preview.png" },
     ],
   },
 ]
@@ -133,6 +133,7 @@ type CatalogModel = {
   tags: string[]
   price: number
   modelPath?: string
+  previewImage?: string
 }
 
 type AddedModel = {
@@ -271,7 +272,14 @@ export default function EditorPage() {
                     onMouseLeave={() => setHoverPreview(null)}
                   >
                     <div className="mb-3 flex aspect-square items-center justify-center rounded-md bg-[radial-gradient(circle_at_35%_20%,white,oklch(0.88_0.018_190))]">
-                      {model.modelPath ? (
+                      {model.previewImage ? (
+                        <img
+                          src={model.previewImage}
+                          alt={model.name}
+                          className="h-full w-full object-contain p-2"
+                          draggable={false}
+                        />
+                      ) : model.modelPath ? (
                         <div className="h-full w-full">
                           <ModelCardPreview path={model.modelPath} />
                           <span className="sr-only">悬浮预览 3D 模型</span>
