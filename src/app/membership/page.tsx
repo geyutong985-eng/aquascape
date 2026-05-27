@@ -14,7 +14,7 @@ const plans = [
     audience: "适合第一次尝试个性化鱼缸造景的用户。",
     annualPrice: "¥0",
     monthlyPrice: "¥0",
-    cta: "开始免费定制",
+    cta: "选择",
     href: "/checkout?plan=basic",
     tone: "standard",
     highlight: "",
@@ -34,7 +34,7 @@ const plans = [
     audience: "适合希望用 AI 更快得到完整造景方向的玩家。",
     annualPrice: "¥69",
     monthlyPrice: "¥9",
-    cta: "选择 Studio",
+    cta: "选择",
     href: "/checkout?plan=studio",
     tone: "popular",
     highlight: "常用选择",
@@ -56,7 +56,7 @@ const plans = [
     audience: "适合追求联名系列、拓展包和设计师合作款的深度玩家。",
     annualPrice: "¥99",
     monthlyPrice: "¥15",
-    cta: "选择 Collectors",
+    cta: "选择",
     href: "/checkout?plan=collectors",
     tone: "premium",
     highlight: "合作系列权益",
@@ -108,7 +108,7 @@ const faqs = [
 
 export default function MembershipPage() {
   const [billing, setBilling] = useState<"monthly" | "annual">("annual");
-  const [selectedPlan, setSelectedPlan] = useState("collectors");
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-background">
