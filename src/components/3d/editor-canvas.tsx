@@ -145,11 +145,11 @@ function getProjectedExtents(material: Material) {
   }
 }
 
-function modelsOverlap(a: Material, b: Material, padding = 0.18) {
+function modelsOverlap(a: Material, b: Material, padding = -0.04) {
   const aExtents = getProjectedExtents(a)
   const bExtents = getProjectedExtents(b)
-  const overlapX = Math.abs(a.x - b.x) < aExtents.halfX + bExtents.halfX + padding
-  const overlapZ = Math.abs(a.z - b.z) < aExtents.halfZ + bExtents.halfZ + padding
+  const overlapX = Math.abs(a.x - b.x) < Math.max(0, aExtents.halfX + bExtents.halfX + padding)
+  const overlapZ = Math.abs(a.z - b.z) < Math.max(0, aExtents.halfZ + bExtents.halfZ + padding)
   const overlapY = a.y < b.y + bExtents.height + padding && b.y < a.y + aExtents.height + padding
 
   return overlapX && overlapZ && overlapY
@@ -464,10 +464,12 @@ function MaterialObject({
 function AxisHandle({
   axis,
   color,
+  extents,
   onPointerDown,
 }: {
   axis: Axis
   color: string
+  extents: ReturnType<typeof getProjectedExtents>
   onPointerDown: (axis: Axis, event: ThreeEvent<PointerEvent>) => void
 }) {
   const rotation: [number, number, number] = axis === "x"
@@ -475,28 +477,33 @@ function AxisHandle({
     : axis === "z"
       ? [Math.PI / 2, 0, 0]
       : [0, 0, 0]
-  const position: [number, number, number] = axis === "x"
-    ? [5.5, 0, 0]
+  const handleLength = THREE.MathUtils.clamp(Math.max(extents.halfX, extents.halfZ, extents.height) * 0.34, 2.8, 5.2)
+  const handleRadius = THREE.MathUtils.clamp(handleLength * 0.035, 0.12, 0.18)
+  const hitRadius = THREE.MathUtils.clamp(handleLength * 0.16, 0.55, 0.95)
+  const coneRadius = THREE.MathUtils.clamp(handleLength * 0.12, 0.42, 0.65)
+  const coneHeight = THREE.MathUtils.clamp(handleLength * 0.24, 0.85, 1.25)
+  const offset: [number, number, number] = axis === "x"
+    ? [extents.halfX + 1.2, extents.height * 0.5, 0]
     : axis === "z"
-      ? [0, 0, 5.5]
-      : [0, 5.5, 0]
+      ? [0, extents.height * 0.5, extents.halfZ + 1.2]
+      : [0, extents.height + 0.8, 0]
 
   return (
     <group
-      position={position}
+      position={offset}
       rotation={rotation}
       onPointerDown={(event) => onPointerDown(axis, event)}
     >
-      <mesh position={[0, 2, 0]}>
-        <cylinderGeometry args={[0.55, 0.55, 4.6, 12]} />
+      <mesh position={[0, handleLength * 0.5, 0]}>
+        <cylinderGeometry args={[hitRadius, hitRadius, handleLength + 0.7, 12]} />
         <meshBasicMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
-      <mesh position={[0, 2, 0]}>
-        <cylinderGeometry args={[0.13, 0.13, 4.2, 12]} />
+      <mesh position={[0, handleLength * 0.5, 0]}>
+        <cylinderGeometry args={[handleRadius, handleRadius, handleLength, 12]} />
         <meshBasicMaterial color={color} />
       </mesh>
-      <mesh position={[0, 4.25, 0]}>
-        <coneGeometry args={[0.46, 0.95, 18]} />
+      <mesh position={[0, handleLength + coneHeight * 0.5, 0]}>
+        <coneGeometry args={[coneRadius, coneHeight, 18]} />
         <meshBasicMaterial color={color} />
       </mesh>
     </group>
@@ -511,18 +518,22 @@ function ScaleHandles({
   onPointerDown: (event: ThreeEvent<PointerEvent>) => void
 }) {
   const bounds = getModelBounds(material)
-  const width = bounds.halfX * 2 * material.scale * (material.scaleX ?? 1)
-  const depth = bounds.halfZ * 2 * material.scale * (material.scaleZ ?? 1)
-  const height = bounds.height * material.scale * (material.scaleY ?? 1)
+  const extents = getProjectedExtents(material)
+  const margin = THREE.MathUtils.clamp(Math.max(extents.halfX, extents.halfZ, extents.height) * 0.08, 0.55, 1.4)
+  const handleSize = THREE.MathUtils.clamp(Math.max(extents.halfX, extents.halfZ, extents.height) * 0.08, 0.65, 1.15)
+  const hitSize = Math.max(2.2, handleSize * 2.6)
+  const width = (extents.halfX + margin) * 2
+  const depth = (extents.halfZ + margin) * 2
+  const height = extents.height + margin * 2
   const halfX = width / 2
   const halfZ = depth / 2
-  const midY = height / 2
+  const midY = height / 2 - margin
   const points: [number, number, number][] = [
     [halfX, midY, halfZ],
     [-halfX, midY, halfZ],
     [halfX, midY, -halfZ],
     [-halfX, midY, -halfZ],
-    [0, height, 0],
+    [0, height - margin, 0],
   ]
 
   return (
@@ -534,11 +545,11 @@ function ScaleHandles({
       {points.map((point) => (
         <group key={point.join(",")} position={point} onPointerDown={onPointerDown}>
           <mesh>
-            <boxGeometry args={[2.4, 2.4, 2.4]} />
+            <boxGeometry args={[hitSize, hitSize, hitSize]} />
             <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
           <mesh>
-            <boxGeometry args={[0.9, 0.9, 0.9]} />
+            <boxGeometry args={[handleSize, handleSize, handleSize]} />
             <meshBasicMaterial color="#111111" />
           </mesh>
         </group>
@@ -573,6 +584,10 @@ function TransformGizmo({
   const plane = useMemo(() => new THREE.Plane(), [])
   const hit = useMemo(() => new THREE.Vector3(), [])
   const position = [material.x, material.y, material.z] as [number, number, number]
+  const extents = getProjectedExtents(material)
+  const rotateRadius = THREE.MathUtils.clamp(Math.max(extents.halfX, extents.halfZ) + 0.9, 3.2, 15)
+  const rotateTube = THREE.MathUtils.clamp(rotateRadius * 0.026, 0.12, 0.28)
+  const rotateHitTube = THREE.MathUtils.clamp(rotateRadius * 0.12, 0.55, 1.4)
   const applyScaleDrag = (clientY: number, activeDrag: NonNullable<typeof drag>) => {
     if (!onMaterialUpdate || activeDrag.axis !== "scale") return
     const clientDelta = (activeDrag.startClientY ?? clientY) - clientY
@@ -693,20 +708,20 @@ function TransformGizmo({
     >
       {mode === "translate" ? (
         <>
-          <AxisHandle axis="x" color="#ef4444" onPointerDown={beginDrag} />
-          <AxisHandle axis="y" color="#22c55e" onPointerDown={beginDrag} />
-          <AxisHandle axis="z" color="#3b82f6" onPointerDown={beginDrag} />
+          <AxisHandle axis="x" color="#ef4444" extents={extents} onPointerDown={beginDrag} />
+          <AxisHandle axis="y" color="#22c55e" extents={extents} onPointerDown={beginDrag} />
+          <AxisHandle axis="z" color="#3b82f6" extents={extents} onPointerDown={beginDrag} />
         </>
       ) : mode === "scale" ? (
         <ScaleHandles material={material} onPointerDown={beginScale} />
       ) : (
         <group onPointerDown={(event) => event.stopPropagation()}>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, getProjectedExtents(material).height + 0.8, 0]} onPointerDown={beginRotate}>
-            <torusGeometry args={[5.4, 0.16, 16, 96]} />
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, extents.height * 0.5, 0]} onPointerDown={beginRotate}>
+            <torusGeometry args={[rotateRadius, rotateTube, 16, 96]} />
             <meshBasicMaterial color="#111111" transparent opacity={0.78} />
           </mesh>
-          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, getProjectedExtents(material).height + 0.8, 0]} onPointerDown={beginRotate}>
-            <torusGeometry args={[5.4, 0.7, 16, 96]} />
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, extents.height * 0.5, 0]} onPointerDown={beginRotate}>
+            <torusGeometry args={[rotateRadius, rotateHitTube, 16, 96]} />
             <meshBasicMaterial transparent opacity={0} depthWrite={false} />
           </mesh>
         </group>

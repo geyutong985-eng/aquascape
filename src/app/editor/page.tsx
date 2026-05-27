@@ -292,9 +292,14 @@ export default function EditorPage() {
                         <PackagePlus className="h-8 w-8 text-brand/70" />
                       )}
                     </div>
-                    <div className="min-h-12">
-                      <h3 className="text-sm font-semibold leading-snug">{model.name}</h3>
-                      <div className="mt-2 flex flex-wrap gap-1">
+                    <div>
+                      <div className="flex min-h-10 items-start justify-between gap-2">
+                        <h3 className="text-sm font-semibold leading-snug">{model.name}</h3>
+                        {addedCount > 0 && (
+                          <span className="shrink-0 rounded-full bg-brand/10 px-2 py-0.5 text-[11px] font-semibold text-brand">{addedCount}</span>
+                        )}
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap gap-1">
                         {model.tags.map((tag) => (
                           <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{tag}</span>
                         ))}
@@ -302,9 +307,9 @@ export default function EditorPage() {
                     </div>
                     <button
                       onClick={() => addModel(model)}
-                      className={`mt-3 flex h-8 w-full items-center justify-center rounded-md text-sm font-medium transition-colors ${addedCount > 0 ? "bg-brand/10 text-brand hover:bg-brand/15" : "bg-foreground text-background opacity-0 group-hover:opacity-100"}`}
+                      className="mt-3 flex h-8 w-full items-center justify-center rounded-md border border-brand/20 bg-brand/10 text-sm font-semibold text-brand transition-colors hover:bg-brand hover:text-white"
                     >
-                      {addedCount > 0 ? `+ 再添加 (${addedCount})` : "+ 加入组合"}
+                      + 添加模型
                     </button>
                   </div>
                 )
