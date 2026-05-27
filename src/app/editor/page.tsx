@@ -13,6 +13,7 @@ import {
   MessageSquareText,
   Move3D,
   PackagePlus,
+  Rotate3D,
   RotateCcw,
   Save,
   Send,
@@ -134,6 +135,7 @@ const colorGroups = [
 const transformModes = [
   { id: "translate", label: "移动", icon: Move3D },
   { id: "scale", label: "缩放", icon: StretchHorizontal },
+  { id: "rotate", label: "旋转", icon: Rotate3D },
 ] as const
 
 type AddedModel = {
@@ -149,6 +151,7 @@ type AddedModel = {
   scaleX: number
   scaleY: number
   scaleZ: number
+  rotationY: number
   modelPath?: string
   bounds?: {
     halfX: number
@@ -190,6 +193,7 @@ export default function EditorPage() {
       scaleX: 1,
       scaleY: 1,
       scaleZ: 1,
+      rotationY: 0,
       modelPath: model.modelPath,
     }
     setModels((current) => [...current, nextModel])
@@ -255,7 +259,7 @@ export default function EditorPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {activeGroup.models.map((model) => {
-                const added = models.some((item) => item.name === model.name)
+                const addedCount = models.filter((item) => item.name === model.name).length
                 return (
                   <div
                     key={model.name}
@@ -298,9 +302,9 @@ export default function EditorPage() {
                     </div>
                     <button
                       onClick={() => addModel(model)}
-                      className={`mt-3 flex h-8 w-full items-center justify-center rounded-md text-sm font-medium transition-colors ${added ? "bg-brand/10 text-brand" : "bg-foreground text-background opacity-0 group-hover:opacity-100"}`}
+                      className={`mt-3 flex h-8 w-full items-center justify-center rounded-md text-sm font-medium transition-colors ${addedCount > 0 ? "bg-brand/10 text-brand hover:bg-brand/15" : "bg-foreground text-background opacity-0 group-hover:opacity-100"}`}
                     >
-                      {added ? <><Check className="mr-1 h-3.5 w-3.5" />已添加</> : "+ 加入组合"}
+                      {addedCount > 0 ? `+ 再添加 (${addedCount})` : "+ 加入组合"}
                     </button>
                   </div>
                 )

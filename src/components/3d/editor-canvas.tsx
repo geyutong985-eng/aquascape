@@ -19,6 +19,7 @@ interface Material {
   scaleY?: number
   scaleZ?: number
   modelPath?: string
+  rotationY?: number
   bounds?: ModelBounds
 }
 
@@ -28,7 +29,7 @@ interface TankSize {
   height: number
 }
 
-type TransformMode = "translate" | "scale"
+type TransformMode = "translate" | "scale" | "rotate"
 type Axis = "x" | "y" | "z"
 type ModelBounds = {
   halfX: number
@@ -125,7 +126,40 @@ function getModelBounds(material: Material): ModelBounds {
   return { halfX: 4.2, halfZ: 4.2, height: 5.2 }
 }
 
-function clampMaterial(material: Material, tankSize: TankSize, patch: Partial<Material>) {
+function getProjectedExtents(material: Material) {
+  const bounds = getModelBounds(material)
+  const scale = material.scale
+  const scaleX = material.scaleX ?? 1
+  const scaleY = material.scaleY ?? 1
+  const scaleZ = material.scaleZ ?? 1
+  const rawX = bounds.halfX * scale * scaleX
+  const rawZ = bounds.halfZ * scale * scaleZ
+  const rotation = material.rotationY ?? 0
+  const cos = Math.abs(Math.cos(rotation))
+  const sin = Math.abs(Math.sin(rotation))
+
+  return {
+    halfX: rawX * cos + rawZ * sin,
+    halfZ: rawX * sin + rawZ * cos,
+    height: bounds.height * scale * scaleY,
+  }
+}
+
+function modelsOverlap(a: Material, b: Material, padding = 0.18) {
+  const aExtents = getProjectedExtents(a)
+  const bExtents = getProjectedExtents(b)
+  const overlapX = Math.abs(a.x - b.x) < aExtents.halfX + bExtents.halfX + padding
+  const overlapZ = Math.abs(a.z - b.z) < aExtents.halfZ + bExtents.halfZ + padding
+  const overlapY = a.y < b.y + bExtents.height + padding && b.y < a.y + aExtents.height + padding
+
+  return overlapX && overlapZ && overlapY
+}
+
+function collidesWithOtherModels(candidate: Material, materials: Material[]) {
+  return materials.some((item) => item.id !== candidate.id && modelsOverlap(candidate, item))
+}
+
+function clampMaterial(material: Material, tankSize: TankSize, patch: Partial<Material>, materials: Material[] = []) {
   const next = { ...material, ...patch }
   const l = tankSize.length * SCENE_SCALE
   const w = tankSize.width * SCENE_SCALE
@@ -140,21 +174,25 @@ function clampMaterial(material: Material, tankSize: TankSize, patch: Partial<Ma
     (h - FLOOR_Y - 0.4) / Math.max(0.1, bounds.height * scaleY)
   ))
   const scale = THREE.MathUtils.clamp(next.scale, 0.35, maxScale)
-  const extentX = bounds.halfX * scale * scaleX
-  const extentZ = bounds.halfZ * scale * scaleZ
-  const height = bounds.height * scale * scaleY
-  const halfX = Math.max(0, l / 2 - extentX)
-  const halfZ = Math.max(0, w / 2 - extentZ)
-  const topY = Math.max(FLOOR_Y, h - height)
-
-  return {
-    ...next,
-    x: THREE.MathUtils.clamp(next.x, -halfX, halfX),
-    y: THREE.MathUtils.clamp(next.y, FLOOR_Y, topY),
-    z: THREE.MathUtils.clamp(next.z, -halfZ, halfZ),
-    scale,
+  const withScale = { ...next, scale }
+  const extents = getProjectedExtents(withScale)
+  const halfX = Math.max(0, l / 2 - extents.halfX)
+  const halfZ = Math.max(0, w / 2 - extents.halfZ)
+  const topY = Math.max(FLOOR_Y, h - extents.height)
+  const constrained = {
+    ...withScale,
+    x: THREE.MathUtils.clamp(withScale.x, -halfX, halfX),
+    y: THREE.MathUtils.clamp(withScale.y, FLOOR_Y, topY),
+    z: THREE.MathUtils.clamp(withScale.z, -halfZ, halfZ),
   }
+
+  if (collidesWithOtherModels(constrained, materials)) {
+    return material
+  }
+
+  return constrained
 }
+
 
 function GlassTank({ length, width, height }: TankSize) {
   const l = length * SCENE_SCALE
@@ -399,6 +437,7 @@ function MaterialObject({
     <group
       position={[material.x, material.y, material.z]}
       scale={objectScale}
+      rotation={[0, material.rotationY ?? 0, 0]}
       onClick={(event) => {
         event.stopPropagation()
         onClick()
@@ -512,18 +551,20 @@ function TransformGizmo({
   material,
   mode,
   tankSize,
+  materials,
   onMaterialUpdate,
   onDragStateChange,
 }: {
   material: Material
   mode: TransformMode
   tankSize: TankSize
+  materials: Material[]
   onMaterialUpdate?: (id: string, patch: Partial<Material>) => void
   onDragStateChange: (dragging: boolean) => void
 }) {
   const { camera, pointer, raycaster } = useThree()
   const [drag, setDrag] = useState<null | {
-    axis: Axis | "scale"
+    axis: Axis | "scale" | "rotate"
     startPoint: THREE.Vector3
     startMaterial: Material
     startClientY?: number
@@ -537,7 +578,7 @@ function TransformGizmo({
     const clientDelta = (activeDrag.startClientY ?? clientY) - clientY
     const ratio = THREE.MathUtils.clamp(1 + clientDelta * 0.008, 0.35, 3.2)
     const nextScale = activeDrag.startMaterial.scale * ratio
-    const clamped = clampMaterial(activeDrag.startMaterial, tankSize, { scale: nextScale })
+    const clamped = clampMaterial(activeDrag.startMaterial, tankSize, { scale: nextScale }, materials)
     onMaterialUpdate(material.id, {
       x: clamped.x,
       y: clamped.y,
@@ -564,7 +605,7 @@ function TransformGizmo({
       window.removeEventListener("pointerup", handleUp)
       window.removeEventListener("pointercancel", handleUp)
     }
-  }, [drag, onDragStateChange, onMaterialUpdate, tankSize])
+  }, [drag, materials, onDragStateChange, onMaterialUpdate, tankSize])
 
   const beginDrag = (axis: Axis, event: ThreeEvent<PointerEvent>) => {
     stopEditorGesture(event)
@@ -595,6 +636,24 @@ function TransformGizmo({
     onDragStateChange(true)
   }
 
+  const beginRotate = (event: ThreeEvent<PointerEvent>) => {
+    stopEditorGesture(event)
+    captureEditorPointer(event)
+    const center = new THREE.Vector3(material.x, material.y, material.z)
+    const normal = camera.getWorldDirection(new THREE.Vector3())
+    plane.setFromNormalAndCoplanarPoint(normal, center)
+    raycaster.setFromCamera(pointer, camera)
+    raycaster.ray.intersectPlane(plane, hit)
+    setDrag({
+      axis: "rotate",
+      startPoint: hit.clone(),
+      startMaterial: material,
+      startClientY: event.nativeEvent.clientX,
+    })
+    onDragStateChange(true)
+  }
+
+
   return (
     <group
       position={position}
@@ -611,12 +670,19 @@ function TransformGizmo({
           return
         }
 
+        if (drag.axis === "rotate") {
+          const rotationY = (drag.startMaterial.rotationY ?? 0) + (event.nativeEvent.clientX - (drag.startClientY ?? event.nativeEvent.clientX)) * 0.012
+          const clamped = clampMaterial(drag.startMaterial, tankSize, { rotationY }, materials)
+          onMaterialUpdate(material.id, { x: clamped.x, y: clamped.y, z: clamped.z, rotationY: clamped.rotationY })
+          return
+        }
+
         const patch = {
           x: drag.startMaterial.x + (drag.axis === "x" ? delta.x : 0),
           y: drag.startMaterial.y + (drag.axis === "y" ? delta.y : 0),
           z: drag.startMaterial.z + (drag.axis === "z" ? delta.z : 0),
         }
-        const clamped = clampMaterial(drag.startMaterial, tankSize, patch)
+        const clamped = clampMaterial(drag.startMaterial, tankSize, patch, materials)
         onMaterialUpdate(material.id, { x: clamped.x, y: clamped.y, z: clamped.z })
       }}
       onPointerUp={(event) => {
@@ -631,8 +697,19 @@ function TransformGizmo({
           <AxisHandle axis="y" color="#22c55e" onPointerDown={beginDrag} />
           <AxisHandle axis="z" color="#3b82f6" onPointerDown={beginDrag} />
         </>
-      ) : (
+      ) : mode === "scale" ? (
         <ScaleHandles material={material} onPointerDown={beginScale} />
+      ) : (
+        <group onPointerDown={(event) => event.stopPropagation()}>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, getProjectedExtents(material).height + 0.8, 0]} onPointerDown={beginRotate}>
+            <torusGeometry args={[5.4, 0.16, 16, 96]} />
+            <meshBasicMaterial color="#111111" transparent opacity={0.78} />
+          </mesh>
+          <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, getProjectedExtents(material).height + 0.8, 0]} onPointerDown={beginRotate}>
+            <torusGeometry args={[5.4, 0.7, 16, 96]} />
+            <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+          </mesh>
+        </group>
       )}
     </group>
   )
@@ -692,7 +769,7 @@ function Scene({
         const clamped = clampMaterial(objectDrag.startMaterial, tankSize, {
           x: objectDrag.startMaterial.x + delta.x,
           z: objectDrag.startMaterial.z + delta.z,
-        })
+        }, materials)
         onMaterialUpdate(objectDrag.id, { x: clamped.x, y: clamped.y, z: clamped.z })
       }}
       onPointerUp={(event) => {
@@ -743,6 +820,7 @@ function Scene({
           material={selected}
           mode={transformMode}
           tankSize={tankSize}
+          materials={materials}
           onMaterialUpdate={onMaterialUpdate}
           onDragStateChange={setEditorDragging}
         />
