@@ -2,7 +2,7 @@
 
 import { Suspense, type ElementRef, useEffect, useMemo, useRef, useState } from "react"
 import { Canvas, ThreeEvent, useThree } from "@react-three/fiber"
-import { ContactShadows, OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei"
+import { ContactShadows, Html, OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei"
 import * as THREE from "three"
 
 interface Material {
@@ -29,7 +29,8 @@ interface TankSize {
   height: number
 }
 
-type TransformMode = "translate" | "scale" | "rotate"
+type TransformMode = "select" | "translate" | "scale" | "rotate"
+type ViewPreset = "front" | "back" | "left" | "right" | "top" | "perspective"
 type Axis = "x" | "y" | "z"
 type ModelBounds = {
   halfX: number
@@ -41,10 +42,15 @@ interface Props {
   tankSize: TankSize
   materials: Material[]
   selectedMaterialId: string | null
+  selectedMaterialIds?: string[]
   onMaterialSelect: (id: string | null) => void
-  onMaterialUpdate?: (id: string, patch: Partial<Material>) => void
+  onMaterialSelectionChange?: (ids: string[]) => void
+  onMaterialUpdate?: (id: string, patch: Partial<Material>, startMaterial?: Material) => void
+  onMaterialsUpdate?: (updates: Record<string, Partial<Material>>) => void
   onMaterialBounds?: (id: string, bounds: ModelBounds) => void
   transformMode: TransformMode
+  viewPreset?: ViewPreset
+  onCameraRotationChange?: (rotation: { x: number; y: number }) => void
 }
 
 const SCENE_SCALE = 0.8
@@ -145,21 +151,86 @@ function getProjectedExtents(material: Material) {
   }
 }
 
-function modelsOverlap(a: Material, b: Material, padding = -0.04) {
-  const aExtents = getProjectedExtents(a)
-  const bExtents = getProjectedExtents(b)
-  const overlapX = Math.abs(a.x - b.x) < Math.max(0, aExtents.halfX + bExtents.halfX + padding)
-  const overlapZ = Math.abs(a.z - b.z) < Math.max(0, aExtents.halfZ + bExtents.halfZ + padding)
-  const overlapY = a.y < b.y + bExtents.height + padding && b.y < a.y + aExtents.height + padding
+function getCollisionBox(material: Material) {
+  const bounds = getModelBounds(material)
+  const scale = material.scale
+  const scaleX = material.scaleX ?? 1
+  const scaleY = material.scaleY ?? 1
+  const scaleZ = material.scaleZ ?? 1
+  const rotation = material.rotationY ?? 0
+  const cos = Math.cos(rotation)
+  const sin = Math.sin(rotation)
 
-  return overlapX && overlapZ && overlapY
+  return {
+    centerX: material.x,
+    centerZ: material.z,
+    halfX: bounds.halfX * scale * scaleX * 0.95,
+    halfZ: bounds.halfZ * scale * scaleZ * 0.95,
+    height: bounds.height * scale * scaleY * 0.98,
+    axisX: new THREE.Vector2(cos, sin),
+    axisZ: new THREE.Vector2(-sin, cos),
+  }
+}
+
+function getCollisionProjectionRadius(box: ReturnType<typeof getCollisionBox>, axis: THREE.Vector2) {
+  return box.halfX * Math.abs(axis.dot(box.axisX)) + box.halfZ * Math.abs(axis.dot(box.axisZ))
+}
+
+function boxesOverlapXZ(a: ReturnType<typeof getCollisionBox>, b: ReturnType<typeof getCollisionBox>, padding = 0.02) {
+  const centerDelta = new THREE.Vector2(b.centerX - a.centerX, b.centerZ - a.centerZ)
+  const axes = [a.axisX, a.axisZ, b.axisX, b.axisZ]
+
+  return axes.every((axis) => {
+    const distance = Math.abs(centerDelta.dot(axis))
+    const radius = getCollisionProjectionRadius(a, axis) + getCollisionProjectionRadius(b, axis) + padding
+    return distance < radius
+  })
+}
+
+function modelsOverlap(a: Material, b: Material, padding = 0.02) {
+  const aBox = getCollisionBox(a)
+  const bBox = getCollisionBox(b)
+  const overlapXZ = boxesOverlapXZ(aBox, bBox, padding)
+  const overlapY = a.y < b.y + bBox.height + padding && b.y < a.y + aBox.height + padding
+
+  return overlapXZ && overlapY
 }
 
 function collidesWithOtherModels(candidate: Material, materials: Material[]) {
   return materials.some((item) => item.id !== candidate.id && modelsOverlap(candidate, item))
 }
 
-function clampMaterial(material: Material, tankSize: TankSize, patch: Partial<Material>, materials: Material[] = []) {
+function interpolateMaterial(from: Material, to: Material, t: number): Material {
+  return {
+    ...to,
+    x: THREE.MathUtils.lerp(from.x, to.x, t),
+    y: THREE.MathUtils.lerp(from.y, to.y, t),
+    z: THREE.MathUtils.lerp(from.z, to.z, t),
+    scale: THREE.MathUtils.lerp(from.scale, to.scale, t),
+    rotationY: THREE.MathUtils.lerp(from.rotationY ?? 0, to.rotationY ?? 0, t),
+  }
+}
+
+function resolveModelContact(candidate: Material, materials: Material[], fallback: Material) {
+  if (collidesWithOtherModels(fallback, materials)) return fallback
+
+  let low = { ...fallback }
+  let high = { ...candidate }
+
+  for (let i = 0; i < 14; i += 1) {
+    const mid = interpolateMaterial(fallback, high, 0.5)
+    if (collidesWithOtherModels(mid, materials)) {
+      high = mid
+    } else {
+      low = mid
+    }
+  }
+
+  return low
+}
+
+
+function clampMaterial(material: Material, tankSize: TankSize, patch: Partial<Material>, materials: Material[] = [], collisionFallback: Material = material) {
   const next = { ...material, ...patch }
   const l = tankSize.length * SCENE_SCALE
   const w = tankSize.width * SCENE_SCALE
@@ -187,7 +258,7 @@ function clampMaterial(material: Material, tankSize: TankSize, patch: Partial<Ma
   }
 
   if (collidesWithOtherModels(constrained, materials)) {
-    return material
+    return resolveModelContact(constrained, materials, collisionFallback)
   }
 
   return constrained
@@ -565,15 +636,17 @@ function TransformGizmo({
   materials,
   onMaterialUpdate,
   onDragStateChange,
+  onTransformStart,
 }: {
   material: Material
   mode: TransformMode
   tankSize: TankSize
   materials: Material[]
-  onMaterialUpdate?: (id: string, patch: Partial<Material>) => void
+  onMaterialUpdate?: (id: string, patch: Partial<Material>, startMaterial?: Material) => void
   onDragStateChange: (dragging: boolean) => void
+  onTransformStart?: (material: Material) => void
 }) {
-  const { camera, pointer, raycaster } = useThree()
+  const { camera, gl, pointer, raycaster } = useThree()
   const [drag, setDrag] = useState<null | {
     axis: Axis | "scale" | "rotate"
     startPoint: THREE.Vector3
@@ -593,13 +666,13 @@ function TransformGizmo({
     const clientDelta = (activeDrag.startClientY ?? clientY) - clientY
     const ratio = THREE.MathUtils.clamp(1 + clientDelta * 0.008, 0.35, 3.2)
     const nextScale = activeDrag.startMaterial.scale * ratio
-    const clamped = clampMaterial(activeDrag.startMaterial, tankSize, { scale: nextScale }, materials)
+    const clamped = clampMaterial(activeDrag.startMaterial, tankSize, { scale: nextScale }, materials, material)
     onMaterialUpdate(material.id, {
       x: clamped.x,
       y: clamped.y,
       z: clamped.z,
       scale: clamped.scale,
-    })
+    }, activeDrag.startMaterial)
   }
 
   useEffect(() => {
@@ -630,6 +703,7 @@ function TransformGizmo({
     raycaster.setFromCamera(pointer, camera)
     raycaster.ray.intersectPlane(plane, hit)
     setDrag({ axis, startPoint: hit.clone(), startMaterial: material })
+    onTransformStart?.(material)
     onDragStateChange(true)
   }
 
@@ -648,6 +722,7 @@ function TransformGizmo({
       startClientY: event.nativeEvent.clientY,
       startDistance: Math.max(1, hit.distanceTo(center)),
     })
+    onTransformStart?.(material)
     onDragStateChange(true)
   }
 
@@ -665,6 +740,7 @@ function TransformGizmo({
       startMaterial: material,
       startClientY: event.nativeEvent.clientX,
     })
+    onTransformStart?.(material)
     onDragStateChange(true)
   }
 
@@ -687,8 +763,8 @@ function TransformGizmo({
 
         if (drag.axis === "rotate") {
           const rotationY = (drag.startMaterial.rotationY ?? 0) + (event.nativeEvent.clientX - (drag.startClientY ?? event.nativeEvent.clientX)) * 0.012
-          const clamped = clampMaterial(drag.startMaterial, tankSize, { rotationY }, materials)
-          onMaterialUpdate(material.id, { x: clamped.x, y: clamped.y, z: clamped.z, rotationY: clamped.rotationY })
+          const clamped = clampMaterial(drag.startMaterial, tankSize, { rotationY }, materials, material)
+          onMaterialUpdate(material.id, { x: clamped.x, y: clamped.y, z: clamped.z, rotationY: clamped.rotationY }, drag.startMaterial)
           return
         }
 
@@ -697,8 +773,8 @@ function TransformGizmo({
           y: drag.startMaterial.y + (drag.axis === "y" ? delta.y : 0),
           z: drag.startMaterial.z + (drag.axis === "z" ? delta.z : 0),
         }
-        const clamped = clampMaterial(drag.startMaterial, tankSize, patch, materials)
-        onMaterialUpdate(material.id, { x: clamped.x, y: clamped.y, z: clamped.z })
+        const clamped = clampMaterial(drag.startMaterial, tankSize, patch, materials, material)
+        onMaterialUpdate(material.id, { x: clamped.x, y: clamped.y, z: clamped.z }, drag.startMaterial)
       }}
       onPointerUp={(event) => {
         releaseEditorPointer(event)
@@ -730,14 +806,50 @@ function TransformGizmo({
   )
 }
 
+function createGroupProxy(items: Material[]): Material {
+  const boxes = items.map((item) => ({ item, extents: getProjectedExtents(item) }))
+  const minX = Math.min(...boxes.map(({ item, extents }) => item.x - extents.halfX))
+  const maxX = Math.max(...boxes.map(({ item, extents }) => item.x + extents.halfX))
+  const minZ = Math.min(...boxes.map(({ item, extents }) => item.z - extents.halfZ))
+  const maxZ = Math.max(...boxes.map(({ item, extents }) => item.z + extents.halfZ))
+  const minY = Math.min(...items.map((item) => item.y))
+  const maxY = Math.max(...boxes.map(({ item, extents }) => item.y + extents.height))
+
+  return {
+    id: "__group__",
+    name: "组合选择",
+    material: items[0]?.material ?? "丝光PLA",
+    color: items[0]?.color ?? "暖泥灰",
+    price: 0,
+    x: (minX + maxX) / 2,
+    y: minY,
+    z: (minZ + maxZ) / 2,
+    scale: 1,
+    scaleX: 1,
+    scaleY: 1,
+    scaleZ: 1,
+    rotationY: 0,
+    bounds: {
+      halfX: Math.max(0.1, (maxX - minX) / 2),
+      halfZ: Math.max(0.1, (maxZ - minZ) / 2),
+      height: Math.max(0.1, maxY - minY),
+    },
+  }
+}
+
 function Scene({
   tankSize,
   materials,
   selectedMaterialId,
+  selectedMaterialIds = [],
   onMaterialSelect,
+  onMaterialSelectionChange,
   onMaterialUpdate,
+  onMaterialsUpdate,
   onMaterialBounds,
   transformMode,
+  viewPreset = "perspective",
+  onCameraRotationChange,
 }: Props) {
   const [gizmoDragging, setGizmoDragging] = useState(false)
   const controlsRef = useRef<ElementRef<typeof OrbitControls>>(null)
@@ -746,14 +858,117 @@ function Scene({
     startPoint: THREE.Vector3
     startMaterial: Material
   }>(null)
-  const { camera, pointer, raycaster } = useThree()
+  const [selectionDrag, setSelectionDrag] = useState<null | { startX: number; startY: number; currentX: number; currentY: number }>(null)
+  const groupStartRef = useRef<null | { proxy: Material; materials: Material[] }>(null)
+  const { camera, gl, pointer, raycaster } = useThree()
   const dragPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR_Y), [])
   const dragPoint = useMemo(() => new THREE.Vector3(), [])
   const l = tankSize.length * SCENE_SCALE
   const w = tankSize.width * SCENE_SCALE
   const h = tankSize.height * SCENE_SCALE
   const cameraDistance = Math.max(l, w, h) * 1.34
+  const selectedItems = materials.filter((item) => selectedMaterialIds.includes(item.id))
   const selected = materials.find((item) => item.id === selectedMaterialId)
+  const groupSelection = selectedItems.length > 1 ? createGroupProxy(selectedItems) : null
+  const activeTransformTarget = groupSelection ?? selected
+  const lastCameraRotation = useRef({ x: Number.NaN, y: Number.NaN })
+
+  const reportCameraRotation = () => {
+    if (!onCameraRotationChange) return
+    const target = controlsRef.current?.target ?? new THREE.Vector3(0, h * 0.36, 0)
+    const offset = camera.position.clone().sub(target)
+    const horizontal = Math.sqrt(offset.x * offset.x + offset.z * offset.z)
+    const nextRotation = {
+      x: THREE.MathUtils.clamp(-THREE.MathUtils.radToDeg(Math.atan2(offset.y, Math.max(0.001, horizontal))), -90, 90),
+      y: -THREE.MathUtils.radToDeg(Math.atan2(offset.x, offset.z)),
+    }
+    const previous = lastCameraRotation.current
+    if (Math.abs(previous.x - nextRotation.x) < 0.4 && Math.abs(previous.y - nextRotation.y) < 0.4) return
+    lastCameraRotation.current = nextRotation
+    onCameraRotationChange(nextRotation)
+  }
+
+  useEffect(() => {
+    const positions: Record<ViewPreset, [number, number, number]> = {
+      front: [0, h * 0.45, cameraDistance],
+      back: [0, h * 0.45, -cameraDistance],
+      left: [-cameraDistance, h * 0.45, 0],
+      right: [cameraDistance, h * 0.45, 0],
+      top: [0, cameraDistance, 0.01],
+      perspective: [cameraDistance, cameraDistance * 0.72, cameraDistance * 0.92],
+    }
+    const nextPosition = positions[viewPreset]
+    camera.position.set(...nextPosition)
+    camera.lookAt(0, h * 0.36, 0)
+    controlsRef.current?.target.set(0, h * 0.36, 0)
+    controlsRef.current?.update()
+    reportCameraRotation()
+  }, [camera, cameraDistance, h, viewPreset] )
+
+  const beginSelection = (event: ThreeEvent<PointerEvent>) => {
+    const wantsSelection = transformMode === "select" || event.nativeEvent.shiftKey
+    if (!wantsSelection || event.button !== 0 || objectDrag || gizmoDragging) return
+    stopEditorGesture(event)
+    onMaterialSelectionChange?.([])
+    setSelectionDrag({ startX: event.nativeEvent.clientX, startY: event.nativeEvent.clientY, currentX: event.nativeEvent.clientX, currentY: event.nativeEvent.clientY })
+    setEditorDragging(true)
+  }
+
+  const finishSelection = () => {
+    if (!selectionDrag) return
+    const rect = gl.domElement.getBoundingClientRect()
+    const minX = Math.min(selectionDrag.startX, selectionDrag.currentX)
+    const maxX = Math.max(selectionDrag.startX, selectionDrag.currentX)
+    const minY = Math.min(selectionDrag.startY, selectionDrag.currentY)
+    const maxY = Math.max(selectionDrag.startY, selectionDrag.currentY)
+    const nextIds = materials.filter((material) => {
+      const projected = new THREE.Vector3(material.x, material.y + getProjectedExtents(material).height * 0.5, material.z).project(camera)
+      const screenX = rect.left + (projected.x + 1) * rect.width * 0.5
+      const screenY = rect.top + (1 - projected.y) * rect.height * 0.5
+      return screenX >= minX && screenX <= maxX && screenY >= minY && screenY <= maxY
+    }).map((material) => material.id)
+    onMaterialSelectionChange?.(nextIds)
+    setSelectionDrag(null)
+    setEditorDragging(false)
+  }
+
+  const applyGroupTransform = (patch: Partial<Material>, startProxy?: Material) => {
+    if (!groupSelection || !startProxy || !groupStartRef.current || !onMaterialsUpdate) return false
+    const nextProxy = { ...startProxy, ...patch }
+    const deltaX = nextProxy.x - groupStartRef.current.proxy.x
+    const deltaY = nextProxy.y - groupStartRef.current.proxy.y
+    const deltaZ = nextProxy.z - groupStartRef.current.proxy.z
+    const scaleRatio = nextProxy.scale / Math.max(0.001, groupStartRef.current.proxy.scale)
+    const rotationDelta = (nextProxy.rotationY ?? 0) - (groupStartRef.current.proxy.rotationY ?? 0)
+    const cos = Math.cos(rotationDelta)
+    const sin = Math.sin(rotationDelta)
+    const selectedIds = new Set(groupStartRef.current.materials.map((item) => item.id))
+    const updates: Record<string, Partial<Material>> = {}
+    const staticMaterials = materials.filter((item) => !selectedIds.has(item.id))
+    let workingMaterials = [...staticMaterials]
+
+    for (const item of groupStartRef.current.materials) {
+      const relativeX = (item.x - groupStartRef.current.proxy.x) * scaleRatio
+      const relativeZ = (item.z - groupStartRef.current.proxy.z) * scaleRatio
+      const rotatedX = relativeX * cos - relativeZ * sin
+      const rotatedZ = relativeX * sin + relativeZ * cos
+      const candidate = {
+        ...item,
+        x: groupStartRef.current.proxy.x + rotatedX + deltaX,
+        y: item.y + deltaY,
+        z: groupStartRef.current.proxy.z + rotatedZ + deltaZ,
+        scale: item.scale * scaleRatio,
+        rotationY: (item.rotationY ?? 0) + rotationDelta,
+      }
+      const clamped = clampMaterial(item, tankSize, candidate, workingMaterials, item)
+      updates[item.id] = { x: clamped.x, y: clamped.y, z: clamped.z, scale: clamped.scale, rotationY: clamped.rotationY }
+      workingMaterials = [...workingMaterials, { ...item, ...updates[item.id] }]
+    }
+
+    onMaterialsUpdate(updates)
+    return true
+  }
+
   const setEditorDragging = (dragging: boolean) => {
     setGizmoDragging(dragging)
     if (controlsRef.current) controlsRef.current.enabled = !dragging
@@ -763,6 +978,7 @@ function Scene({
     stopEditorGesture(event)
     captureEditorPointer(event)
     onMaterialSelect(material.id)
+    onMaterialSelectionChange?.([material.id])
     if (transformMode !== "translate") return
     dragPlane.constant = -material.y
     raycaster.setFromCamera(pointer, camera)
@@ -775,20 +991,28 @@ function Scene({
     <group
       onClick={() => onMaterialSelect(null)}
       onPointerMove={(event) => {
+        if (selectionDrag) {
+          stopEditorGesture(event)
+          setSelectionDrag((current) => current ? { ...current, currentX: event.nativeEvent.clientX, currentY: event.nativeEvent.clientY } : current)
+          return
+        }
         if (!objectDrag || !onMaterialUpdate) return
         stopEditorGesture(event)
         raycaster.setFromCamera(pointer, camera)
         const point = raycaster.ray.intersectPlane(dragPlane, dragPoint)
         if (!point) return
         const delta = dragPoint.clone().sub(objectDrag.startPoint)
+        const currentMaterial = materials.find((item) => item.id === objectDrag.id) ?? objectDrag.startMaterial
         const clamped = clampMaterial(objectDrag.startMaterial, tankSize, {
           x: objectDrag.startMaterial.x + delta.x,
           z: objectDrag.startMaterial.z + delta.z,
-        }, materials)
-        onMaterialUpdate(objectDrag.id, { x: clamped.x, y: clamped.y, z: clamped.z })
+        }, materials, currentMaterial)
+        onMaterialUpdate(objectDrag.id, { x: clamped.x, y: clamped.y, z: clamped.z }, objectDrag.startMaterial)
       }}
       onPointerUp={(event) => {
         releaseEditorPointer(event)
+        finishSelection()
+        setSelectionDrag(null)
         setObjectDrag(null)
         setEditorDragging(false)
       }}
@@ -801,7 +1025,7 @@ function Scene({
       <PerspectiveCamera makeDefault position={[cameraDistance, cameraDistance * 0.72, cameraDistance * 0.92]} fov={42} />
       <OrbitControls
         ref={controlsRef}
-        enabled={!gizmoDragging}
+        enabled={!gizmoDragging && transformMode !== "select"}
         target={[0, h * 0.36, 0]}
         minDistance={30}
         maxDistance={180}
@@ -809,6 +1033,7 @@ function Scene({
         enablePan
         enableDamping
         dampingFactor={0.06}
+        onChange={reportCameraRotation}
       />
 
       <color attach="background" args={["#c4d7d4"]} />
@@ -819,26 +1044,52 @@ function Scene({
 
       <GlassTank length={tankSize.length} width={tankSize.width} height={tankSize.height} />
 
+      <mesh position={[0, FLOOR_Y - 0.04, 0]} rotation={[-Math.PI / 2, 0, 0]} onPointerDown={beginSelection}>
+        <planeGeometry args={[l, w]} />
+        <meshBasicMaterial transparent opacity={0} depthWrite={false} />
+      </mesh>
+
       {materials.map((m) => (
         <MaterialObject
           key={m.id}
           material={m}
-          isSelected={selectedMaterialId === m.id}
+          isSelected={selectedMaterialIds.includes(m.id)}
           onClick={() => onMaterialSelect(m.id)}
           onPointerDown={beginObjectDrag}
           onBounds={onMaterialBounds}
         />
       ))}
 
-      {selected && (
+      {activeTransformTarget && (
         <TransformGizmo
-          material={selected}
+          material={activeTransformTarget}
           mode={transformMode}
           tankSize={tankSize}
           materials={materials}
-          onMaterialUpdate={onMaterialUpdate}
+          onMaterialUpdate={(id, patch, startMaterial) => {
+            if (applyGroupTransform(patch, startMaterial)) return
+            onMaterialUpdate?.(id, patch, startMaterial)
+          }}
           onDragStateChange={setEditorDragging}
+          onTransformStart={(startMaterial) => {
+            if (!groupSelection) return
+            groupStartRef.current = { proxy: startMaterial, materials: selectedItems.map((item) => ({ ...item })) }
+          }}
         />
+      )}
+
+      {selectionDrag && (
+        <Html fullscreen pointerEvents="none">
+          <div
+            className="fixed z-[100] border border-neutral-950/80 bg-neutral-950/10"
+            style={{
+              left: Math.min(selectionDrag.startX, selectionDrag.currentX),
+              top: Math.min(selectionDrag.startY, selectionDrag.currentY),
+              width: Math.abs(selectionDrag.currentX - selectionDrag.startX),
+              height: Math.abs(selectionDrag.currentY - selectionDrag.startY),
+            }}
+          />
+        </Html>
       )}
 
       <gridHelper args={[80, 20, 0x7fb4b8, 0xb9c8c3]} position={[0, 0.04, 0]} />
@@ -851,10 +1102,15 @@ export default function EditorCanvas({
   tankSize,
   materials,
   selectedMaterialId,
+  selectedMaterialIds,
   onMaterialSelect,
+  onMaterialSelectionChange,
   onMaterialUpdate,
+  onMaterialsUpdate,
   onMaterialBounds,
   transformMode,
+  viewPreset,
+  onCameraRotationChange,
 }: Props) {
   return (
     <div className="h-full w-full bg-[#c4d7d4]" style={{ touchAction: "none", overscrollBehavior: "contain" }}>
@@ -872,10 +1128,15 @@ export default function EditorCanvas({
           tankSize={tankSize}
           materials={materials}
           selectedMaterialId={selectedMaterialId}
+          selectedMaterialIds={selectedMaterialIds}
           onMaterialSelect={onMaterialSelect}
+          onMaterialSelectionChange={onMaterialSelectionChange}
           onMaterialUpdate={onMaterialUpdate}
+          onMaterialsUpdate={onMaterialsUpdate}
           onMaterialBounds={onMaterialBounds}
           transformMode={transformMode}
+          viewPreset={viewPreset}
+          onCameraRotationChange={onCameraRotationChange}
         />
       </Canvas>
     </div>
