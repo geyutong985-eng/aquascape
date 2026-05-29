@@ -44,7 +44,15 @@ const ModelCardPreview = dynamic(() => import("@/components/3d/model-card-previe
   loading: () => <PackagePlus className="h-8 w-8 text-brand/70" />,
 })
 
-const styleGroups = [
+type CatalogModel = {
+  name: string
+  tags: string[]
+  price: number
+  modelPath?: string
+  previewImage?: string
+}
+
+const styleGroups: { name: string; models: CatalogModel[] }[] = [
   {
     name: "神秘洞穴",
     models: [
@@ -127,14 +135,6 @@ const transformModes = [
   { id: "translate", label: "移动", icon: Move3D },
   { id: "scale", label: "缩放", icon: StretchHorizontal },
 ] as const
-
-type CatalogModel = {
-  name: string
-  tags: string[]
-  price: number
-  modelPath?: string
-  previewImage?: string
-}
 
 type AddedModel = {
   id: string
