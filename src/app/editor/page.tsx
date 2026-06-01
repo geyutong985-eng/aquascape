@@ -1,6 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import Image from "next/image"
@@ -202,6 +203,15 @@ const transformModes = [
   { id: "rotate", label: "旋转", icon: Rotate3D },
 ] as const
 
+type TankSize = {
+  length: number
+  width: number
+  height: number
+}
+
+const DEFAULT_TANK_SIZE: TankSize = { length: 60, width: 30, height: 35 }
+const TANK_SIZE_STORAGE_KEY = "finscape:tank-size"
+
 type AddedModel = {
   id: string
   name: string
@@ -244,39 +254,67 @@ function getModelFootprint(model: AddedModel) {
   return { halfX, halfZ, height }
 }
 
-function modelsWouldOverlap(a: AddedModel, b: AddedModel, padding = 0.32) {
+function getProjectedFootprint(model: AddedModel) {
+  const bounds = getModelFootprint(model)
+  const cos = Math.abs(Math.cos(model.rotationY))
+  const sin = Math.abs(Math.sin(model.rotationY))
+  return {
+    halfX: bounds.halfX * cos + bounds.halfZ * sin,
+    halfZ: bounds.halfX * sin + bounds.halfZ * cos,
+  }
+}
+
+function getCollisionAxes(model: AddedModel) {
+  const cos = Math.cos(model.rotationY)
+  const sin = Math.sin(model.rotationY)
+  return [
+    { x: cos, z: sin },
+    { x: -sin, z: cos },
+  ]
+}
+
+function collisionRadius(model: AddedModel, axis: { x: number; z: number }) {
+  const bounds = getModelFootprint(model)
+  const [axisX, axisZ] = getCollisionAxes(model)
+  return bounds.halfX * Math.abs(axis.x * axisX.x + axis.z * axisX.z)
+    + bounds.halfZ * Math.abs(axis.x * axisZ.x + axis.z * axisZ.z)
+}
+
+function modelsWouldOverlap(a: AddedModel, b: AddedModel, padding = 0.02) {
   const aBox = getModelFootprint(a)
   const bBox = getModelFootprint(b)
-  const overlapX = Math.abs(a.x - b.x) < aBox.halfX + bBox.halfX + padding
-  const overlapZ = Math.abs(a.z - b.z) < aBox.halfZ + bBox.halfZ + padding
   const overlapY = a.y < b.y + bBox.height + padding && b.y < a.y + aBox.height + padding
-  return overlapX && overlapZ && overlapY
+  if (!overlapY) return false
+
+  const delta = { x: b.x - a.x, z: b.z - a.z }
+  return [...getCollisionAxes(a), ...getCollisionAxes(b)].every((axis) => {
+    const distance = Math.abs(delta.x * axis.x + delta.z * axis.z)
+    return distance < collisionRadius(a, axis) + collisionRadius(b, axis) + padding
+  })
 }
 
-function fitsInsideTank(model: AddedModel) {
-  const bounds = getModelFootprint(model)
-  const halfLength = 60 * 0.8 * 0.5 - bounds.halfX
-  const halfWidth = 30 * 0.8 * 0.5 - bounds.halfZ
-  return Math.abs(model.x) <= halfLength && Math.abs(model.z) <= halfWidth
+function fitsInsideTank(model: AddedModel, tankSize: TankSize) {
+  const bounds = getProjectedFootprint(model)
+  const halfLength = tankSize.length * 0.8 * 0.5 - bounds.halfX - 0.4
+  const halfWidth = tankSize.width * 0.8 * 0.5 - bounds.halfZ - 0.4
+  const maxY = tankSize.height * 0.8 - getModelFootprint(model).height - 0.4
+  return Math.abs(model.x) <= halfLength && Math.abs(model.z) <= halfWidth && model.y <= maxY
 }
 
-function findPastePosition(model: AddedModel, placedModels: AddedModel[], pasteRound: number) {
-  const directions = [
-    [1, 0],
-    [0, 1],
-    [-1, 0],
-    [0, -1],
-    [1, 1],
-    [-1, 1],
-    [1, -1],
-    [-1, -1],
-  ] as const
-  const step = Math.max(3.2, Math.max(getModelFootprint(model).halfX, getModelFootprint(model).halfZ) * 2 + 0.8)
+function findPastePosition(model: AddedModel, placedModels: AddedModel[], tankSize: TankSize) {
+  const maxSearchDistance = Math.max(tankSize.length, tankSize.width) * 0.8
+  const radialStep = 0.8
+  const directionCount = 24
 
-  for (let radius = pasteRound; radius < pasteRound + 9; radius += 1) {
-    for (const [dx, dz] of directions) {
-      const candidate = { ...model, x: model.x + dx * step * radius, z: model.z + dz * step * radius }
-      if (fitsInsideTank(candidate) && !placedModels.some((item) => modelsWouldOverlap(candidate, item))) {
+  for (let distance = radialStep; distance <= maxSearchDistance; distance += radialStep) {
+    for (let index = 0; index < directionCount; index += 1) {
+      const angle = (Math.PI * 2 * index) / directionCount
+      const candidate = {
+        ...model,
+        x: model.x + Math.cos(angle) * distance,
+        z: model.z + Math.sin(angle) * distance,
+      }
+      if (fitsInsideTank(candidate, tankSize) && !placedModels.some((item) => modelsWouldOverlap(candidate, item))) {
         return candidate
       }
     }
@@ -286,6 +324,9 @@ function findPastePosition(model: AddedModel, placedModels: AddedModel[], pasteR
 }
 
 export default function EditorPage() {
+  const router = useRouter()
+  const [tankSize, setTankSize] = useState<TankSize>(DEFAULT_TANK_SIZE)
+  const [tankSizeReady, setTankSizeReady] = useState(false)
   const [activeStyle, setActiveStyle] = useState("极简现代")
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null)
   const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
@@ -301,7 +342,6 @@ export default function EditorPage() {
   const transformHistoryTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const editorNoticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const copiedModels = useRef<AddedModel[]>([])
-  const pasteCounter = useRef(0)
   const [hoverPreview, setHoverPreview] = useState<null | {
     model: CatalogModel
     x: number
@@ -309,6 +349,32 @@ export default function EditorPage() {
   }>(null)
   const modelIdCounter = useRef(0)
   const [models, setModels] = useState<AddedModel[]>([])
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const storedSize = window.localStorage.getItem(TANK_SIZE_STORAGE_KEY)
+    let parsedStoredSize: Partial<TankSize> = {}
+    try {
+      parsedStoredSize = storedSize ? JSON.parse(storedSize) as Partial<TankSize> : {}
+    } catch {
+      window.localStorage.removeItem(TANK_SIZE_STORAGE_KEY)
+    }
+    const nextSize = {
+      length: Number(params.get("length") ?? parsedStoredSize.length),
+      width: Number(params.get("width") ?? parsedStoredSize.width),
+      height: Number(params.get("height") ?? parsedStoredSize.height),
+    }
+    const isValid = Object.values(nextSize).every((value) => Number.isFinite(value) && value > 0)
+    if (!isValid) {
+      router.replace("/customize")
+      return
+    }
+    window.localStorage.setItem(TANK_SIZE_STORAGE_KEY, JSON.stringify(nextSize))
+    // Tank size comes from URL/localStorage after hydration.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setTankSize(nextSize)
+    setTankSizeReady(true)
+  }, [router])
 
   const activeGroup = styleGroups.find((group) => group.name === activeStyle) ?? styleGroups[0]
   const selectedModel = models.find((model) => model.id === selectedModelId) ?? null
@@ -391,13 +457,12 @@ export default function EditorPage() {
 
   const pasteSelection = useCallback(() => {
     if (!copiedModels.current.length) return
-    pasteCounter.current += 1
     const pastedIds: string[] = []
 
     commitModels((current) => {
       const nextModels = [...current]
       copiedModels.current.forEach((model) => {
-        const positioned = findPastePosition(cloneModelSnapshot(model), nextModels, pasteCounter.current)
+        const positioned = findPastePosition(cloneModelSnapshot(model), nextModels, tankSize)
         if (!positioned) return
 
         modelIdCounter.current += 1
@@ -414,7 +479,7 @@ export default function EditorPage() {
     }
     setSelectedModelIds(pastedIds)
     setSelectedModelId(pastedIds.at(-1) ?? null)
-  }, [commitModels, showEditorNotice])
+  }, [commitModels, showEditorNotice, tankSize])
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -455,6 +520,10 @@ export default function EditorPage() {
     if (material === "半透明树脂") return false
     if (material === "PA12尼龙") return groupName === "深灰系" || colorName === "磨砂黑"
     return true
+  }
+
+  if (!tankSizeReady) {
+    return <main className="flex min-h-screen items-center justify-center bg-background text-sm text-muted-foreground">正在读取鱼缸尺寸...</main>
   }
 
   return (
@@ -628,7 +697,7 @@ export default function EditorPage() {
             </div>
           )}
           <ThreeCanvas
-            tankSize={{ length: 60, width: 30, height: 35 }}
+            tankSize={tankSize}
             materials={models}
             selectedMaterialId={selectedModel?.id ?? null}
             selectedMaterialIds={selectedModelIds}

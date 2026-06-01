@@ -70,7 +70,7 @@ export function Header() {
           <Link href="/gallery" className={navLinkClass(isGallery)}>Gallery</Link>
           <Link href="/membership" className={navLinkClass(isMembership)}>Membership</Link>
           <Link href="/#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">About</Link>
-          <Link href="/editor" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
+          <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
         </div>
 
         {/* Spacer */}
@@ -119,7 +119,7 @@ export function Header() {
               <Link href="/gallery" className={navLinkClass(isGallery, "py-2")} onClick={() => setMobileMenuOpen(false)}>Gallery</Link>
               <Link href="/membership" className={navLinkClass(isMembership, "py-2")} onClick={() => setMobileMenuOpen(false)}>Membership</Link>
               <Link href="/#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>About</Link>
-              <Link href="/editor" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Design</Link>
+              <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Design</Link>
               <div className="border-t border-border/30 my-2" />
               <Link href="/ask-ai" className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2" onClick={() => setMobileMenuOpen(false)}>Ask AI</Link>
 
