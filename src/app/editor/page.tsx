@@ -1,24 +1,26 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import {
   ArrowLeft,
-  Check,
   CheckCircle2,
   CircleDollarSign,
   Download,
   Maximize2,
+  Minimize2,
   MessageSquareText,
   Move3D,
   PackagePlus,
+  Rotate3D,
   RotateCcw,
   Save,
   Send,
   ShoppingCart,
   Sparkles,
+  SquareDashedMousePointer,
   StretchHorizontal,
   Trash2,
   Undo2,
@@ -132,9 +134,72 @@ const colorGroups = [
   { name: "高级色", colors: ["镏金色", "玫瑰金", "星空银", "电镀蓝"], swatches: ["#c99a3d", "#b97868", "#c6ccd2", "#3b6fb6"] },
 ]
 
+const viewPresets = [
+  { id: "front", label: "正面", face: "front" },
+  { id: "back", label: "背面", face: "back" },
+  { id: "left", label: "左侧", face: "left" },
+  { id: "right", label: "右侧", face: "right" },
+  { id: "top", label: "顶视", face: "top" },
+  { id: "perspective", label: "透视", face: "corner" },
+] as const
+
+type ViewPresetId = (typeof viewPresets)[number]["id"]
+type ViewCubeRotation = { x: number; y: number }
+
+function ViewCube({
+  value,
+  rotation,
+  onChange,
+}: {
+  value: ViewPresetId
+  rotation: ViewCubeRotation
+  onChange: (value: ViewPresetId) => void
+}) {
+  const activePreset = viewPresets.find((preset) => preset.id === value)
+  const cubeTransform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
+  const oppositePreset: Partial<Record<ViewPresetId, ViewPresetId>> = {
+    front: "back",
+    back: "front",
+    left: "right",
+    right: "left",
+  }
+  const choosePreset = (target: ViewPresetId) => {
+    onChange(value === target ? oppositePreset[target] ?? target : target)
+  }
+  const faceClass = "absolute flex h-12 w-12 items-center justify-center border border-white/80 bg-white/82 shadow-sm backdrop-blur-sm cursor-pointer transition-colors hover:bg-white"
+
+  return (
+    <div
+      className="relative h-24 w-24 rounded-2xl border border-white/70 bg-white/60 shadow-lg backdrop-blur-sm"
+      style={{ perspective: "520px" }}
+      data-active-preset={activePreset?.id}
+      aria-label="视角立方体"
+    >
+      <div
+        className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 "
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        <div
+          className="relative h-12 w-12 transition-transform duration-300"
+          style={{ transformStyle: "preserve-3d", transform: cubeTransform }}
+        >
+          <button type="button" onPointerDown={(event) => event.stopPropagation()} title="正面 / 再点切背面" aria-label="切换到正面，再次点击切换到背面" onClick={() => choosePreset("front")} className={`${faceClass} ${value === "front" ? "bg-neutral-950 text-white" : "text-neutral-700"}`} style={{ transform: "translateZ(24px)" }} />
+          <button type="button" onPointerDown={(event) => event.stopPropagation()} title="背面 / 再点切正面" aria-label="切换到背面，再次点击切换到正面" onClick={() => choosePreset("back")} className={`${faceClass} ${value === "back" ? "bg-neutral-950 text-white" : "text-neutral-700"}`} style={{ transform: "rotateY(180deg) translateZ(24px)" }} />
+          <button type="button" onPointerDown={(event) => event.stopPropagation()} title="右侧 / 再点切左侧" aria-label="切换到右侧，再次点击切换到左侧" onClick={() => choosePreset("right")} className={`${faceClass} ${value === "right" ? "bg-neutral-950 text-white" : "text-neutral-700"}`} style={{ transform: "rotateY(90deg) translateZ(24px)" }} />
+          <button type="button" onPointerDown={(event) => event.stopPropagation()} title="左侧 / 再点切右侧" aria-label="切换到左侧，再次点击切换到右侧" onClick={() => choosePreset("left")} className={`${faceClass} ${value === "left" ? "bg-neutral-950 text-white" : "text-neutral-700"}`} style={{ transform: "rotateY(-90deg) translateZ(24px)" }} />
+          <button type="button" onPointerDown={(event) => event.stopPropagation()} title="顶视" aria-label="切换到顶视" onClick={() => choosePreset("top")} className={`${faceClass} ${value === "top" ? "bg-neutral-950 text-white" : "text-neutral-700"}`} style={{ transform: "rotateX(90deg) translateZ(24px)" }} />
+          <button type="button" onPointerDown={(event) => event.stopPropagation()} title="透视" aria-label="切换到透视" onClick={() => choosePreset("perspective")} className={`${faceClass} ${value === "perspective" ? "bg-neutral-950 text-white" : "text-neutral-700"}`} style={{ transform: "rotateX(-90deg) translateZ(24px)" }} />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 const transformModes = [
+  { id: "select", label: "框选", icon: SquareDashedMousePointer },
   { id: "translate", label: "移动", icon: Move3D },
   { id: "scale", label: "缩放", icon: StretchHorizontal },
+  { id: "rotate", label: "旋转", icon: Rotate3D },
 ] as const
 
 type AddedModel = {
@@ -150,6 +215,7 @@ type AddedModel = {
   scaleX: number
   scaleY: number
   scaleZ: number
+  rotationY: number
   modelPath?: string
   bounds?: {
     halfX: number
@@ -158,12 +224,84 @@ type AddedModel = {
   }
 }
 
+function isEditableShortcutTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false
+  return Boolean(target.closest("input, textarea, select, [contenteditable='true']"))
+}
+
+function cloneModelSnapshot(model: AddedModel): AddedModel {
+  return {
+    ...model,
+    bounds: model.bounds ? { ...model.bounds } : undefined,
+  }
+}
+
+function getModelFootprint(model: AddedModel) {
+  const scale = model.scale
+  const halfX = (model.bounds?.halfX ?? 1.6) * scale * model.scaleX * 0.95
+  const halfZ = (model.bounds?.halfZ ?? 1.6) * scale * model.scaleZ * 0.95
+  const height = (model.bounds?.height ?? 7) * scale * model.scaleY * 0.98
+  return { halfX, halfZ, height }
+}
+
+function modelsWouldOverlap(a: AddedModel, b: AddedModel, padding = 0.32) {
+  const aBox = getModelFootprint(a)
+  const bBox = getModelFootprint(b)
+  const overlapX = Math.abs(a.x - b.x) < aBox.halfX + bBox.halfX + padding
+  const overlapZ = Math.abs(a.z - b.z) < aBox.halfZ + bBox.halfZ + padding
+  const overlapY = a.y < b.y + bBox.height + padding && b.y < a.y + aBox.height + padding
+  return overlapX && overlapZ && overlapY
+}
+
+function fitsInsideTank(model: AddedModel) {
+  const bounds = getModelFootprint(model)
+  const halfLength = 60 * 0.8 * 0.5 - bounds.halfX
+  const halfWidth = 30 * 0.8 * 0.5 - bounds.halfZ
+  return Math.abs(model.x) <= halfLength && Math.abs(model.z) <= halfWidth
+}
+
+function findPastePosition(model: AddedModel, placedModels: AddedModel[], pasteRound: number) {
+  const directions = [
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+    [0, -1],
+    [1, 1],
+    [-1, 1],
+    [1, -1],
+    [-1, -1],
+  ] as const
+  const step = Math.max(3.2, Math.max(getModelFootprint(model).halfX, getModelFootprint(model).halfZ) * 2 + 0.8)
+
+  for (let radius = pasteRound; radius < pasteRound + 9; radius += 1) {
+    for (const [dx, dz] of directions) {
+      const candidate = { ...model, x: model.x + dx * step * radius, z: model.z + dz * step * radius }
+      if (fitsInsideTank(candidate) && !placedModels.some((item) => modelsWouldOverlap(candidate, item))) {
+        return candidate
+      }
+    }
+  }
+
+  return null
+}
+
 export default function EditorPage() {
   const [activeStyle, setActiveStyle] = useState("极简现代")
   const [selectedModelId, setSelectedModelId] = useState<string | null>(null)
+  const [selectedModelIds, setSelectedModelIds] = useState<string[]>([])
   const [chatInput, setChatInput] = useState("")
   const [aiOpen, setAiOpen] = useState(false)
   const [transformMode, setTransformMode] = useState<(typeof transformModes)[number]["id"]>("translate")
+  const [viewPreset, setViewPreset] = useState<ViewPresetId>("perspective")
+  const [viewCubeRotation, setViewCubeRotation] = useState<ViewCubeRotation>({ x: -28, y: -38 })
+  const [isEditorExpanded, setIsEditorExpanded] = useState(false)
+  const [editorNotice, setEditorNotice] = useState<string | null>(null)
+  const [history, setHistory] = useState<AddedModel[][]>([])
+  const transformHistoryLocked = useRef(false)
+  const transformHistoryTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const editorNoticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const copiedModels = useRef<AddedModel[]>([])
+  const pasteCounter = useRef(0)
   const [hoverPreview, setHoverPreview] = useState<null | {
     model: CatalogModel
     x: number
@@ -175,6 +313,37 @@ export default function EditorPage() {
   const activeGroup = styleGroups.find((group) => group.name === activeStyle) ?? styleGroups[0]
   const selectedModel = models.find((model) => model.id === selectedModelId) ?? null
   const total = models.reduce((sum, model) => sum + model.price, 0)
+
+  const undo = useCallback(() => {
+    setHistory((current) => {
+      const previous = current.at(-1)
+      if (!previous) return current
+      setModels(previous.map((model) => ({ ...model })))
+        const nextSelectedId = previous.some((model) => model.id === selectedModelId) ? selectedModelId : previous.at(-1)?.id ?? null
+      setSelectedModelId(nextSelectedId)
+      setSelectedModelIds(nextSelectedId ? [nextSelectedId] : [])
+      return current.slice(0, -1)
+    })
+  }, [selectedModelId])
+
+  const commitModels = useCallback((updater: (current: AddedModel[]) => AddedModel[]) => {
+    setModels((current) => {
+      setHistory((historyItems) => [...historyItems.slice(-24), current.map((model) => ({ ...model }))])
+      return updater(current)
+    })
+  }, [])
+
+  const recordTransformHistory = (snapshot: AddedModel[]) => {
+    if (!transformHistoryLocked.current) {
+      transformHistoryLocked.current = true
+      setHistory((current) => [...current.slice(-24), snapshot.map((model) => ({ ...model }))])
+    }
+    if (transformHistoryTimer.current) clearTimeout(transformHistoryTimer.current)
+    transformHistoryTimer.current = setTimeout(() => {
+      transformHistoryLocked.current = false
+      transformHistoryTimer.current = null
+    }, 350)
+  }
 
   const addModel = (model: CatalogModel) => {
     modelIdCounter.current += 1
@@ -191,16 +360,95 @@ export default function EditorPage() {
       scaleX: 1,
       scaleY: 1,
       scaleZ: 1,
+      rotationY: 0,
       modelPath: model.modelPath,
     }
-    setModels((current) => [...current, nextModel])
+    commitModels((current) => [...current, nextModel])
     setSelectedModelId(nextModel.id)
+    setSelectedModelIds([nextModel.id])
   }
 
   const updateSelected = (patch: Partial<AddedModel>) => {
     if (!selectedModel) return
-    setModels((current) => current.map((model) => model.id === selectedModel.id ? { ...model, ...patch } : model))
+    commitModels((current) => current.map((model) => model.id === selectedModel.id ? { ...model, ...patch } : model))
   }
+
+  const copySelection = useCallback(() => {
+    const selectedIds = selectedModelIds.length ? selectedModelIds : selectedModelId ? [selectedModelId] : []
+    if (!selectedIds.length) return
+    const selectedSet = new Set(selectedIds)
+    copiedModels.current = models.filter((model) => selectedSet.has(model.id)).map(cloneModelSnapshot)
+  }, [models, selectedModelId, selectedModelIds])
+
+  const showEditorNotice = useCallback((message: string) => {
+    setEditorNotice(message)
+    if (editorNoticeTimer.current) clearTimeout(editorNoticeTimer.current)
+    editorNoticeTimer.current = setTimeout(() => {
+      setEditorNotice(null)
+      editorNoticeTimer.current = null
+    }, 1800)
+  }, [])
+
+  const pasteSelection = useCallback(() => {
+    if (!copiedModels.current.length) return
+    pasteCounter.current += 1
+    const pastedIds: string[] = []
+
+    commitModels((current) => {
+      const nextModels = [...current]
+      copiedModels.current.forEach((model) => {
+        const positioned = findPastePosition(cloneModelSnapshot(model), nextModels, pasteCounter.current)
+        if (!positioned) return
+
+        modelIdCounter.current += 1
+        const id = model.name + "-copy-" + modelIdCounter.current
+        pastedIds.push(id)
+        nextModels.push({ ...positioned, id })
+      })
+      return nextModels
+    })
+
+    if (!pastedIds.length) {
+      showEditorNotice("哎呀，模型放不下了")
+      return
+    }
+    setSelectedModelIds(pastedIds)
+    setSelectedModelId(pastedIds.at(-1) ?? null)
+  }, [commitModels, showEditorNotice])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const isShortcut = event.metaKey || event.ctrlKey
+      if (!isShortcut || event.altKey || isEditableShortcutTarget(event.target)) return
+      const key = event.key.toLowerCase()
+
+      if (key === "z") {
+        event.preventDefault()
+        undo()
+        return
+      }
+
+      if (key === "c") {
+        event.preventDefault()
+        copySelection()
+        return
+      }
+
+      if (key === "v") {
+        event.preventDefault()
+        pasteSelection()
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [copySelection, pasteSelection, undo])
+
+  useEffect(() => {
+    return () => {
+      if (editorNoticeTimer.current) clearTimeout(editorNoticeTimer.current)
+    }
+  }, [])
 
   const canUseColor = (material: string, groupName: string, colorName: string) => {
     if (material === "仿木PLA") return false
@@ -223,8 +471,8 @@ export default function EditorPage() {
             <p className="text-xs text-muted-foreground">模型库 · 3D 鱼缸 · 材质清单</p>
           </div>
           <div className="ml-auto hidden items-center gap-2 md:flex">
-            <Button variant="outline" size="sm"><Undo2 className="h-4 w-4" />撤销</Button>
-            <Button variant="outline" size="sm"><RotateCcw className="h-4 w-4" />重做</Button>
+            <Button variant="outline" size="sm" disabled={history.length === 0} onClick={undo}><Undo2 className="h-4 w-4" />撤销</Button>
+            <Button variant="outline" size="sm" disabled><RotateCcw className="h-4 w-4" />重做</Button>
             <Button variant="outline" size="sm"><Save className="h-4 w-4" />保存</Button>
             <Button size="sm"><Download className="h-4 w-4" />导出</Button>
           </div>
@@ -256,7 +504,7 @@ export default function EditorPage() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               {activeGroup.models.map((model) => {
-                const added = models.some((item) => item.name === model.name)
+                const addedCount = models.filter((item) => item.name === model.name).length
                 return (
                   <div
                     key={model.name}
@@ -291,9 +539,14 @@ export default function EditorPage() {
                         <PackagePlus className="h-8 w-8 text-brand/70" />
                       )}
                     </div>
-                    <div className="min-h-12">
-                      <h3 className="text-sm font-semibold leading-snug">{model.name}</h3>
-                      <div className="mt-2 flex flex-wrap gap-1">
+                    <div>
+                      <div className="flex min-h-10 items-start justify-between gap-2">
+                        <h3 className="text-sm font-semibold leading-snug">{model.name}</h3>
+                        {addedCount > 0 && (
+                          <span className="shrink-0 rounded-full bg-brand/10 px-2 py-0.5 text-[11px] font-semibold text-brand">{addedCount}</span>
+                        )}
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap gap-1">
                         {model.tags.map((tag) => (
                           <span key={tag} className="rounded-full bg-muted px-2 py-0.5 text-[11px] text-muted-foreground">{tag}</span>
                         ))}
@@ -301,9 +554,9 @@ export default function EditorPage() {
                     </div>
                     <button
                       onClick={() => addModel(model)}
-                      className={`mt-3 flex h-8 w-full items-center justify-center rounded-md text-sm font-medium transition-colors ${added ? "bg-brand/10 text-brand" : "bg-foreground text-background opacity-0 group-hover:opacity-100"}`}
+                      className="mt-3 flex h-8 w-full items-center justify-center rounded-md border border-brand/20 bg-brand/10 text-sm font-semibold text-brand transition-colors hover:bg-brand hover:text-white"
                     >
-                      {added ? <><Check className="mr-1 h-3.5 w-3.5" />已添加</> : "+ 加入组合"}
+                      + 添加模型
                     </button>
                   </div>
                 )
@@ -326,7 +579,7 @@ export default function EditorPage() {
           )}
         </aside>
 
-        <section className="relative min-h-[720px] overflow-hidden bg-[#c4d7d4] lg:h-[calc(100vh-4rem)]">
+        <section className={`relative min-h-[720px] overflow-hidden bg-[#c4d7d4] ${isEditorExpanded ? "fixed inset-0 z-[90] h-screen" : "lg:h-[calc(100vh-4rem)]"}`}>
           <div className="absolute left-6 top-6 z-10">
             <h2 className="mt-1 text-3xl font-semibold text-neutral-950">3D 鱼缸编辑器</h2>
           </div>
@@ -347,16 +600,57 @@ export default function EditorPage() {
             })}
           </div>
           <div className="absolute right-6 top-6 z-10 flex gap-2">
-            <Button variant="outline" size="icon" aria-label="全屏预览"><Maximize2 className="h-4 w-4" /></Button>
-            <Button variant="outline" size="icon" aria-label="清空视窗" onClick={() => setModels([])}><Trash2 className="h-4 w-4" /></Button>
+<ViewCube value={viewPreset} rotation={viewCubeRotation} onChange={setViewPreset} />
+            <Button variant="outline" size="icon" aria-label={isEditorExpanded ? "退出全屏预览" : "全屏预览"} onClick={() => setIsEditorExpanded((value) => !value)}>
+              {isEditorExpanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="删除当前模型"
+              disabled={!selectedModel}
+              onClick={() => {
+                if (!selectedModel) return
+                commitModels((current) => current.filter((model) => model.id !== selectedModel.id))
+                setSelectedModelId(null)
+                setSelectedModelIds([])
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
           </div>
+          {editorNotice && (
+            <div
+              className="pointer-events-none absolute right-6 top-36 z-20 rounded-lg border border-white/70 bg-neutral-950/88 px-4 py-2 text-sm font-medium text-white shadow-xl backdrop-blur-sm"
+              aria-live="polite"
+            >
+              {editorNotice}
+            </div>
+          )}
           <ThreeCanvas
             tankSize={{ length: 60, width: 30, height: 35 }}
             materials={models}
             selectedMaterialId={selectedModel?.id ?? null}
-            onMaterialSelect={setSelectedModelId}
+            selectedMaterialIds={selectedModelIds}
+            onMaterialSelect={(id) => {
+              setSelectedModelId(id)
+              setSelectedModelIds(id ? [id] : [])
+            }}
+            onMaterialSelectionChange={(ids) => {
+              setSelectedModelIds(ids)
+              setSelectedModelId(ids.at(-1) ?? null)
+            }}
             onMaterialUpdate={(id, patch) => {
-              setModels((current) => current.map((model) => model.id === id ? { ...model, ...patch } : model))
+              setModels((current) => {
+                recordTransformHistory(current)
+                return current.map((model) => model.id === id ? { ...model, ...patch } : model)
+              })
+            }}
+            onMaterialsUpdate={(updates) => {
+              setModels((current) => {
+                recordTransformHistory(current)
+                return current.map((model) => updates[model.id] ? { ...model, ...updates[model.id] } : model)
+              })
             }}
             onMaterialBounds={(id, bounds) => {
               setModels((current) => current.map((model) => {
@@ -369,6 +663,8 @@ export default function EditorPage() {
               }))
             }}
             transformMode={transformMode}
+            viewPreset={viewPreset}
+            onCameraRotationChange={setViewCubeRotation}
           />
         </section>
 
@@ -464,7 +760,7 @@ export default function EditorPage() {
             </div>
             <div className="space-y-2">
               {models.map((model) => (
-                <button key={model.id} onClick={() => setSelectedModelId(model.id)} className="flex w-full items-center justify-between rounded-md bg-muted/60 px-3 py-2 text-left text-sm">
+                <button key={model.id} onClick={() => { setSelectedModelId(model.id); setSelectedModelIds([model.id]) }} className="flex w-full items-center justify-between rounded-md bg-muted/60 px-3 py-2 text-left text-sm">
                   <span className="truncate">{model.name}</span>
                   <span className="font-medium">¥{model.price}</span>
                 </button>
