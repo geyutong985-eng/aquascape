@@ -59,58 +59,292 @@ const styleGroups: { name: string; models: CatalogModel[] }[] = [
   {
     name: "神秘洞穴",
     models: [
-      { name: "幽灵脸洞", tags: ["穿行", "躲藏"], price: 89 },
-      { name: "怪兽洞穴", tags: ["躲藏", "堆叠"], price: 99 },
-      { name: "表情凹陷", tags: ["点缀", "躲藏"], price: 79 },
-      { name: "多孔洞洞穴", tags: ["穿行", "躲藏"], price: 109 },
-      { name: "悬空桥洞", tags: ["穿行", "悬挂"], price: 119 },
-    ],
+      {
+        name: "幽灵脸洞",
+        tags: [
+          "穿行",
+          "躲藏"
+        ],
+        price: 89,
+        modelPath: "/models/mysterious-caves/ghost-face-cave/model.glb",
+        previewImage: "/models/mysterious-caves/ghost-face-cave/preview.png"
+      },
+      {
+        name: "怪兽洞穴",
+        tags: [
+          "躲藏",
+          "堆叠"
+        ],
+        price: 99,
+        modelPath: "/models/mysterious-caves/monster-cave/model.glb",
+        previewImage: "/models/mysterious-caves/monster-cave/preview.png"
+      },
+      {
+        name: "表情凹陷块",
+        tags: [
+          "点缀",
+          "躲藏"
+        ],
+        price: 79,
+        modelPath: "/models/mysterious-caves/expression-recess-block/model.glb",
+        previewImage: "/models/mysterious-caves/expression-recess-block/preview.png"
+      },
+      {
+        name: "多孔洞洞穴 1",
+        tags: [
+          "穿行",
+          "躲藏"
+        ],
+        price: 109,
+        modelPath: "/models/mysterious-caves/multi-hole-cave-1/model.glb",
+        previewImage: "/models/mysterious-caves/multi-hole-cave-1/preview.png"
+      },
+      {
+        name: "多孔洞洞穴 2",
+        tags: [
+          "穿行",
+          "躲藏"
+        ],
+        price: 109,
+        modelPath: "/models/mysterious-caves/multi-hole-cave-2/model.glb",
+        previewImage: "/models/mysterious-caves/multi-hole-cave-2/preview.png"
+      },
+      {
+        name: "悬空桥洞",
+        tags: [
+          "穿行",
+          "悬挂"
+        ],
+        price: 119,
+        modelPath: "/models/mysterious-caves/suspended-bridge-cave/model.glb",
+        previewImage: "/models/mysterious-caves/suspended-bridge-cave/preview.png"
+      }
+    ]
   },
   {
     name: "轻盈典雅",
     models: [
-      { name: "圆润曲块", tags: ["点缀", "堆叠"], price: 69 },
-      { name: "抽象花瓣形", tags: ["点缀", "悬挂"], price: 88 },
-      { name: "泡泡造型", tags: ["点缀", "躲藏"], price: 76 },
-      { name: "小巧雕塑体块", tags: ["点缀"], price: 66 },
-    ],
+      {
+        name: "圆润曲块",
+        tags: [
+          "点缀",
+          "堆叠"
+        ],
+        price: 69,
+        modelPath: "/models/light-elegance/rounded-curve-block/model.glb",
+        previewImage: "/models/light-elegance/rounded-curve-block/preview.png"
+      },
+      {
+        name: "抽象花瓣形",
+        tags: [
+          "点缀",
+          "悬挂"
+        ],
+        price: 88,
+        modelPath: "/models/light-elegance/abstract-petal/model.glb",
+        previewImage: "/models/light-elegance/abstract-petal/preview.png"
+      },
+      {
+        name: "泡泡造型",
+        tags: [
+          "点缀",
+          "躲藏"
+        ],
+        price: 76,
+        modelPath: "/models/light-elegance/bubble-form/model.glb",
+        previewImage: "/models/light-elegance/bubble-form/preview.png"
+      },
+      {
+        name: "小巧雕塑体块",
+        tags: [
+          "点缀"
+        ],
+        price: 66,
+        modelPath: "/models/light-elegance/small-sculptural-block/model.glb",
+        previewImage: "/models/light-elegance/small-sculptural-block/preview.png"
+      }
+    ]
   },
   {
     name: "几何艺术",
     models: [
-      { name: "环体拱门", tags: ["穿行", "点缀"], price: 98 },
-      { name: "波纹墙", tags: ["躲藏", "悬挂"], price: 95 },
-      { name: "网格塔", tags: ["堆叠", "躲藏"], price: 105 },
-      { name: "柱阵块", tags: ["堆叠", "点缀"], price: 86 },
-    ],
+      {
+        name: "环体拱门",
+        tags: [
+          "穿行",
+          "点缀"
+        ],
+        price: 98,
+        modelPath: "/models/geometric-art/ring-arch/model.glb",
+        previewImage: "/models/geometric-art/ring-arch/preview.png"
+      },
+      {
+        name: "波纹墙",
+        tags: [
+          "躲藏",
+          "悬挂"
+        ],
+        price: 95,
+        modelPath: "/models/geometric-art/ripple-wall/model.glb",
+        previewImage: "/models/geometric-art/ripple-wall/preview.png"
+      },
+      {
+        name: "网格塔",
+        tags: [
+          "堆叠",
+          "躲藏"
+        ],
+        price: 105,
+        modelPath: "/models/geometric-art/grid-tower/model.glb",
+        previewImage: "/models/geometric-art/grid-tower/preview.png"
+      },
+      {
+        name: "柱阵块",
+        tags: [
+          "堆叠",
+          "点缀"
+        ],
+        price: 86,
+        modelPath: "/models/geometric-art/column-array-block/model.glb",
+        previewImage: "/models/geometric-art/column-array-block/preview.png"
+      }
+    ]
   },
   {
     name: "自然有机",
     models: [
-      { name: "扭曲枝条", tags: ["悬挂", "点缀"], price: 92 },
-      { name: "贝壳洞", tags: ["躲藏", "穿行"], price: 89 },
-      { name: "珊瑚骨架", tags: ["穿行", "点缀"], price: 118 },
-      { name: "菌菇洞", tags: ["躲藏", "堆叠"], price: 96 },
-    ],
+      {
+        name: "扭曲枝条",
+        tags: [
+          "悬挂",
+          "点缀"
+        ],
+        price: 92,
+        modelPath: "/models/organic-nature/twisted-branch/model.glb",
+        previewImage: "/models/organic-nature/twisted-branch/preview.png"
+      },
+      {
+        name: "贝壳洞",
+        tags: [
+          "躲藏",
+          "穿行"
+        ],
+        price: 89,
+        modelPath: "/models/organic-nature/shell-cave/model.glb",
+        previewImage: "/models/organic-nature/shell-cave/preview.png"
+      },
+      {
+        name: "珊瑚骨架",
+        tags: [
+          "穿行",
+          "点缀"
+        ],
+        price: 118,
+        modelPath: "/models/organic-nature/coral-skeleton/model.glb",
+        previewImage: "/models/organic-nature/coral-skeleton/preview.png"
+      },
+      {
+        name: "菌菇洞",
+        tags: [
+          "躲藏",
+          "堆叠"
+        ],
+        price: 96,
+        modelPath: "/models/organic-nature/mushroom-cave/model.glb",
+        previewImage: "/models/organic-nature/mushroom-cave/preview.png"
+      }
+    ]
   },
   {
     name: "微型遗迹",
     models: [
-      { name: "小型拱门", tags: ["穿行", "点缀"], price: 82 },
-      { name: "塔尖模块", tags: ["堆叠", "点缀"], price: 78 },
-      { name: "断桥残柱", tags: ["穿行", "堆叠"], price: 104 },
-      { name: "石碑遗迹块", tags: ["点缀", "躲藏"], price: 86 },
-    ],
+      {
+        name: "小型拱门",
+        tags: [
+          "穿行",
+          "点缀"
+        ],
+        price: 82,
+        modelPath: "/models/miniature-ruins/small-arch/model.glb",
+        previewImage: "/models/miniature-ruins/small-arch/preview.png"
+      },
+      {
+        name: "塔尖模块",
+        tags: [
+          "堆叠",
+          "点缀"
+        ],
+        price: 78,
+        modelPath: "/models/miniature-ruins/spire-module/model.glb",
+        previewImage: "/models/miniature-ruins/spire-module/preview.png"
+      },
+      {
+        name: "断桥残柱",
+        tags: [
+          "穿行",
+          "堆叠"
+        ],
+        price: 104,
+        modelPath: "/models/miniature-ruins/broken-bridge-column/model.glb",
+        previewImage: "/models/miniature-ruins/broken-bridge-column/preview.png"
+      },
+      {
+        name: "石碑遗迹块",
+        tags: [
+          "点缀",
+          "躲藏"
+        ],
+        price: 86,
+        modelPath: "/models/miniature-ruins/stone-tablet-ruin/model.glb",
+        previewImage: "/models/miniature-ruins/stone-tablet-ruin/preview.png"
+      }
+    ]
   },
   {
     name: "极简现代",
     models: [
-      { name: "单体大块", tags: ["躲藏", "堆叠"], price: 88, modelPath: "/models/minimal-modern/single-large-block/model.glb", previewImage: "/models/minimal-modern/single-large-block/preview.png" },
-      { name: "留洞雕塑", tags: ["穿行", "点缀"], price: 108, modelPath: "/models/minimal-modern/hollow-sculpture/model.glb", previewImage: "/models/minimal-modern/hollow-sculpture/preview.png" },
-      { name: "曲面体块", tags: ["点缀", "堆叠"], price: 94, modelPath: "/models/minimal-modern/curved-surface-block/model.glb", previewImage: "/models/minimal-modern/curved-surface-block/preview.png" },
-      { name: "悬浮体块", tags: ["悬挂", "点缀"], price: 112, modelPath: "/models/minimal-modern/floating-block/model.glb", previewImage: "/models/minimal-modern/floating-block/preview.png" },
-    ],
-  },
+      {
+        name: "单体大块",
+        tags: [
+          "躲藏",
+          "堆叠"
+        ],
+        price: 88,
+        modelPath: "/models/minimal-modern/single-large-block/model.glb",
+        previewImage: "/models/minimal-modern/single-large-block/preview.png"
+      },
+      {
+        name: "留洞雕塑",
+        tags: [
+          "穿行",
+          "点缀"
+        ],
+        price: 108,
+        modelPath: "/models/minimal-modern/hollow-sculpture/model.glb",
+        previewImage: "/models/minimal-modern/hollow-sculpture/preview.png"
+      },
+      {
+        name: "曲面体块",
+        tags: [
+          "点缀",
+          "堆叠"
+        ],
+        price: 94,
+        modelPath: "/models/minimal-modern/curved-surface-block/model.glb",
+        previewImage: "/models/minimal-modern/curved-surface-block/preview.png"
+      },
+      {
+        name: "悬浮体块",
+        tags: [
+          "悬挂",
+          "点缀"
+        ],
+        price: 112,
+        modelPath: "/models/minimal-modern/floating-block/model.glb",
+        previewImage: "/models/minimal-modern/floating-block/preview.png"
+      }
+    ]
+  }
 ]
 
 const printMaterials = [

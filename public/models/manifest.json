@@ -7,61 +7,192 @@
       "id": "mysterious-caves",
       "name": "神秘洞穴",
       "models": [
-        { "id": "ghost-face-cave", "name": "幽灵脸洞", "path": "/models/mysterious-caves/ghost-face-cave/model.glb" },
-        { "id": "monster-cave", "name": "怪兽洞穴", "path": "/models/mysterious-caves/monster-cave/model.glb" },
-        { "id": "expression-recess", "name": "表情凹陷", "path": "/models/mysterious-caves/expression-recess/model.glb" },
-        { "id": "multi-hole-cave", "name": "多孔洞洞穴", "path": "/models/mysterious-caves/multi-hole-cave/model.glb" },
-        { "id": "suspended-bridge-cave", "name": "悬空桥洞", "path": "/models/mysterious-caves/suspended-bridge-cave/model.glb" }
+        {
+          "id": "ghost-face-cave",
+          "name": "幽灵脸洞",
+          "path": "/models/mysterious-caves/ghost-face-cave/model.glb",
+          "preview": "/models/mysterious-caves/ghost-face-cave/preview.png"
+        },
+        {
+          "id": "monster-cave",
+          "name": "怪兽洞穴",
+          "path": "/models/mysterious-caves/monster-cave/model.glb",
+          "preview": "/models/mysterious-caves/monster-cave/preview.png"
+        },
+        {
+          "id": "expression-recess-block",
+          "name": "表情凹陷块",
+          "path": "/models/mysterious-caves/expression-recess-block/model.glb",
+          "preview": "/models/mysterious-caves/expression-recess-block/preview.png"
+        },
+        {
+          "id": "multi-hole-cave-1",
+          "name": "多孔洞洞穴 1",
+          "path": "/models/mysterious-caves/multi-hole-cave-1/model.glb",
+          "preview": "/models/mysterious-caves/multi-hole-cave-1/preview.png"
+        },
+        {
+          "id": "multi-hole-cave-2",
+          "name": "多孔洞洞穴 2",
+          "path": "/models/mysterious-caves/multi-hole-cave-2/model.glb",
+          "preview": "/models/mysterious-caves/multi-hole-cave-2/preview.png"
+        },
+        {
+          "id": "suspended-bridge-cave",
+          "name": "悬空桥洞",
+          "path": "/models/mysterious-caves/suspended-bridge-cave/model.glb",
+          "preview": "/models/mysterious-caves/suspended-bridge-cave/preview.png"
+        }
       ]
     },
     {
       "id": "light-elegance",
       "name": "轻盈典雅",
       "models": [
-        { "id": "rounded-curve-block", "name": "圆润曲块", "path": "/models/light-elegance/rounded-curve-block/model.glb" },
-        { "id": "abstract-petal", "name": "抽象花瓣形", "path": "/models/light-elegance/abstract-petal/model.glb" },
-        { "id": "bubble-form", "name": "泡泡造型", "path": "/models/light-elegance/bubble-form/model.glb" },
-        { "id": "small-sculptural-block", "name": "小巧雕塑体块", "path": "/models/light-elegance/small-sculptural-block/model.glb" }
+        {
+          "id": "rounded-curve-block",
+          "name": "圆润曲块",
+          "path": "/models/light-elegance/rounded-curve-block/model.glb",
+          "preview": "/models/light-elegance/rounded-curve-block/preview.png"
+        },
+        {
+          "id": "abstract-petal",
+          "name": "抽象花瓣形",
+          "path": "/models/light-elegance/abstract-petal/model.glb",
+          "preview": "/models/light-elegance/abstract-petal/preview.png"
+        },
+        {
+          "id": "bubble-form",
+          "name": "泡泡造型",
+          "path": "/models/light-elegance/bubble-form/model.glb",
+          "preview": "/models/light-elegance/bubble-form/preview.png"
+        },
+        {
+          "id": "small-sculptural-block",
+          "name": "小巧雕塑体块",
+          "path": "/models/light-elegance/small-sculptural-block/model.glb",
+          "preview": "/models/light-elegance/small-sculptural-block/preview.png"
+        }
       ]
     },
     {
       "id": "geometric-art",
       "name": "几何艺术",
       "models": [
-        { "id": "ring-arch", "name": "环体拱门", "path": "/models/geometric-art/ring-arch/model.glb" },
-        { "id": "ripple-wall", "name": "波纹墙", "path": "/models/geometric-art/ripple-wall/model.glb" },
-        { "id": "grid-tower", "name": "网格塔", "path": "/models/geometric-art/grid-tower/model.glb" },
-        { "id": "column-array-block", "name": "柱阵块", "path": "/models/geometric-art/column-array-block/model.glb" }
+        {
+          "id": "ring-arch",
+          "name": "环体拱门",
+          "path": "/models/geometric-art/ring-arch/model.glb",
+          "preview": "/models/geometric-art/ring-arch/preview.png"
+        },
+        {
+          "id": "ripple-wall",
+          "name": "波纹墙",
+          "path": "/models/geometric-art/ripple-wall/model.glb",
+          "preview": "/models/geometric-art/ripple-wall/preview.png"
+        },
+        {
+          "id": "grid-tower",
+          "name": "网格塔",
+          "path": "/models/geometric-art/grid-tower/model.glb",
+          "preview": "/models/geometric-art/grid-tower/preview.png"
+        },
+        {
+          "id": "column-array-block",
+          "name": "柱阵块",
+          "path": "/models/geometric-art/column-array-block/model.glb",
+          "preview": "/models/geometric-art/column-array-block/preview.png"
+        }
       ]
     },
     {
       "id": "organic-nature",
       "name": "自然有机",
       "models": [
-        { "id": "twisted-branch", "name": "扭曲枝条", "path": "/models/organic-nature/twisted-branch/model.glb" },
-        { "id": "shell-cave", "name": "贝壳洞", "path": "/models/organic-nature/shell-cave/model.glb" },
-        { "id": "coral-skeleton", "name": "珊瑚骨架", "path": "/models/organic-nature/coral-skeleton/model.glb" },
-        { "id": "mushroom-cave", "name": "菌菇洞", "path": "/models/organic-nature/mushroom-cave/model.glb" }
+        {
+          "id": "twisted-branch",
+          "name": "扭曲枝条",
+          "path": "/models/organic-nature/twisted-branch/model.glb",
+          "preview": "/models/organic-nature/twisted-branch/preview.png"
+        },
+        {
+          "id": "shell-cave",
+          "name": "贝壳洞",
+          "path": "/models/organic-nature/shell-cave/model.glb",
+          "preview": "/models/organic-nature/shell-cave/preview.png"
+        },
+        {
+          "id": "coral-skeleton",
+          "name": "珊瑚骨架",
+          "path": "/models/organic-nature/coral-skeleton/model.glb",
+          "preview": "/models/organic-nature/coral-skeleton/preview.png"
+        },
+        {
+          "id": "mushroom-cave",
+          "name": "菌菇洞",
+          "path": "/models/organic-nature/mushroom-cave/model.glb",
+          "preview": "/models/organic-nature/mushroom-cave/preview.png"
+        }
       ]
     },
     {
       "id": "miniature-ruins",
       "name": "微型遗迹",
       "models": [
-        { "id": "small-arch", "name": "小型拱门", "path": "/models/miniature-ruins/small-arch/model.glb" },
-        { "id": "spire-module", "name": "塔尖模块", "path": "/models/miniature-ruins/spire-module/model.glb" },
-        { "id": "broken-bridge-column", "name": "断桥残柱", "path": "/models/miniature-ruins/broken-bridge-column/model.glb" },
-        { "id": "stone-tablet-ruin", "name": "石碑遗迹块", "path": "/models/miniature-ruins/stone-tablet-ruin/model.glb" }
+        {
+          "id": "small-arch",
+          "name": "小型拱门",
+          "path": "/models/miniature-ruins/small-arch/model.glb",
+          "preview": "/models/miniature-ruins/small-arch/preview.png"
+        },
+        {
+          "id": "spire-module",
+          "name": "塔尖模块",
+          "path": "/models/miniature-ruins/spire-module/model.glb",
+          "preview": "/models/miniature-ruins/spire-module/preview.png"
+        },
+        {
+          "id": "broken-bridge-column",
+          "name": "断桥残柱",
+          "path": "/models/miniature-ruins/broken-bridge-column/model.glb",
+          "preview": "/models/miniature-ruins/broken-bridge-column/preview.png"
+        },
+        {
+          "id": "stone-tablet-ruin",
+          "name": "石碑遗迹块",
+          "path": "/models/miniature-ruins/stone-tablet-ruin/model.glb",
+          "preview": "/models/miniature-ruins/stone-tablet-ruin/preview.png"
+        }
       ]
     },
     {
       "id": "minimal-modern",
       "name": "极简现代",
       "models": [
-        { "id": "single-large-block", "name": "单体大块", "path": "/models/minimal-modern/single-large-block/model.glb" },
-        { "id": "hollow-sculpture", "name": "留洞雕塑", "path": "/models/minimal-modern/hollow-sculpture/model.glb" },
-        { "id": "curved-surface-block", "name": "曲面体块", "path": "/models/minimal-modern/curved-surface-block/model.glb" },
-        { "id": "floating-block", "name": "悬浮体块", "path": "/models/minimal-modern/floating-block/model.glb" }
+        {
+          "id": "single-large-block",
+          "name": "单体大块",
+          "path": "/models/minimal-modern/single-large-block/model.glb",
+          "preview": "/models/minimal-modern/single-large-block/preview.png"
+        },
+        {
+          "id": "hollow-sculpture",
+          "name": "留洞雕塑",
+          "path": "/models/minimal-modern/hollow-sculpture/model.glb",
+          "preview": "/models/minimal-modern/hollow-sculpture/preview.png"
+        },
+        {
+          "id": "curved-surface-block",
+          "name": "曲面体块",
+          "path": "/models/minimal-modern/curved-surface-block/model.glb",
+          "preview": "/models/minimal-modern/curved-surface-block/preview.png"
+        },
+        {
+          "id": "floating-block",
+          "name": "悬浮体块",
+          "path": "/models/minimal-modern/floating-block/model.glb",
+          "preview": "/models/minimal-modern/floating-block/preview.png"
+        }
       ]
     }
   ]
