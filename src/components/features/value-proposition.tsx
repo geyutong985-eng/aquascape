@@ -5,9 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Sparkles, Eye, Factory } from "@/components/icons";
 
 const features = [
-  { icon: Sparkles, title: "AI Design", desc: "Tell us your vision. Our AI brings your vision to life." },
-  { icon: Eye, title: "3D Preview", desc: "See every angle before you order." },
-  { icon: Factory, title: "3D Printed", desc: "Precision manufacturing, uniquely yours." },
+  { icon: Sparkles, title: "AI 辅助构思", desc: "描述你的鱼缸尺寸、风格和偏好，快速生成可调整的造景方向。" },
+  { icon: Eye, title: "3D 预览确认", desc: "下单前查看比例、结构和摆放效果，减少想象和实物之间的落差。" },
+  { icon: Factory, title: "专属打印制作", desc: "按你的方案进入 3D 打印流程，让造景模块真正适配你的鱼缸。" },
 ];
 
 function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
@@ -55,7 +55,7 @@ export function ValueProposition() {
     <section className="py-24 bg-muted/30">
       <div className="max-w-6xl mx-auto px-6">
         <h2 className="heading-2 text-foreground mb-16 text-center">
-          Why Choose Us
+          为什么选择 Finscape
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

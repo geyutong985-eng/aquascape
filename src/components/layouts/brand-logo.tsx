@@ -17,7 +17,7 @@ export function BrandLogo({ centered = false }: BrandLogoProps) {
           <path d="M13.3876 51.1167C13.3876 51.1167 58.3363 12.9404 103.285 12.9404C168.889 12.9404 217.477 89.2931 283.08 89.2931C328.029 89.2931 372.978 51.1167 372.978 51.1167" stroke="currentColor" strokeWidth="25" strokeLinecap="round" strokeLinejoin="round" />
         </g>
       </svg>
-      <span className="text-lg text-brand font-semibold font-heading tracking-widest">Finscape</span>
+      <span className="text-lg text-brand font-semibold font-heading">Finscape</span>
     </Link>
   );
 }

@@ -40,7 +40,7 @@ export function Header() {
     router.push("/");
   };
 
-  const userName = user?.user_metadata?.name || user?.email?.split("@")[0] || "User";
+  const userName = user?.user_metadata?.name || user?.email?.split("@")[0] || "用户";
   const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
   const isGallery = pathname?.startsWith("/gallery");
   const isMembership = pathname?.startsWith("/membership");
@@ -62,15 +62,15 @@ export function Header() {
               <path d="M13.3876 51.1167C13.3876 51.1167 58.3363 12.9404 103.285 12.9404C168.889 12.9404 217.477 89.2931 283.08 89.2931C328.029 89.2931 372.978 51.1167 372.978 51.1167" stroke="currentColor" strokeWidth="25" strokeLinecap="round" strokeLinejoin="round"/>
             </g>
           </svg>
-          <span className="text-lg text-brand font-semibold font-heading tracking-widest">Finscape</span>
+          <span className="text-lg text-brand font-semibold font-heading">Finscape</span>
         </Link>
 
         {/* Desktop Navigation - left aligned after logo */}
         <div className="hidden md:flex items-center gap-6 ml-8">
-          <Link href="/gallery" className={navLinkClass(isGallery)}>Gallery</Link>
-          <Link href="/membership" className={navLinkClass(isMembership)}>Membership</Link>
-          <Link href="/#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">About</Link>
-          <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">Design</Link>
+          <Link href="/gallery" className={navLinkClass(isGallery)}>灵感图库</Link>
+          <Link href="/membership" className={navLinkClass(isMembership)}>会员方案</Link>
+          <Link href="/#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">关于我们</Link>
+          <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold">开始设计</Link>
         </div>
 
         {/* Spacer */}
@@ -78,7 +78,7 @@ export function Header() {
 
         {/* Desktop Auth - Loading or Authenticated */}
         <div className="hidden md:flex items-center gap-5">
-          <Link href="/ask-ai" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">Ask AI</Link>
+          <Link href="/ask-ai" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">问问 AI</Link>
 
           {!loading && (
             <>
@@ -91,10 +91,10 @@ export function Header() {
               ) : (
                 // Not logged in - show login/register buttons
                 <>
-                  <Link href="/login" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">Sign in</Link>
+                  <Link href="/login" className="text-foreground hover:text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-1.5">登录</Link>
                   <Link href="/register">
                     <Button size="default">
-                      Sign up
+                      注册
                     </Button>
                   </Link>
                 </>
@@ -116,12 +116,12 @@ export function Header() {
         {mobileMenuOpen && (
           <div className="absolute top-full left-0 right-0 bg-background/95 backdrop-blur-sm border-b border-border/30 md:hidden">
             <div className="flex flex-col p-4 gap-4">
-              <Link href="/gallery" className={navLinkClass(isGallery, "py-2")} onClick={() => setMobileMenuOpen(false)}>Gallery</Link>
-              <Link href="/membership" className={navLinkClass(isMembership, "py-2")} onClick={() => setMobileMenuOpen(false)}>Membership</Link>
-              <Link href="/#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>About</Link>
-              <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>Design</Link>
+              <Link href="/gallery" className={navLinkClass(isGallery, "py-2")} onClick={() => setMobileMenuOpen(false)}>灵感图库</Link>
+              <Link href="/membership" className={navLinkClass(isMembership, "py-2")} onClick={() => setMobileMenuOpen(false)}>会员方案</Link>
+              <Link href="/#about" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>关于我们</Link>
+              <Link href="/customize" className="text-muted-foreground hover:text-foreground transition-colors text-base font-semibold py-2" onClick={() => setMobileMenuOpen(false)}>开始设计</Link>
               <div className="border-t border-border/30 my-2" />
-              <Link href="/ask-ai" className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2" onClick={() => setMobileMenuOpen(false)}>Ask AI</Link>
+              <Link href="/ask-ai" className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2" onClick={() => setMobileMenuOpen(false)}>问问 AI</Link>
 
               {!loading && (
                 <>
@@ -139,15 +139,15 @@ export function Header() {
                         }}
                         className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2 w-full text-left"
                       >
-                        Sign out
+                        退出登录
                       </button>
                     </>
                   ) : (
                     <>
-                      <Link href="/login" className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2" onClick={() => setMobileMenuOpen(false)}>Sign in</Link>
+                      <Link href="/login" className="text-foreground transition-colors text-base font-normal bg-background/60 border border-border/80 rounded-md px-3 py-2" onClick={() => setMobileMenuOpen(false)}>登录</Link>
                       <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
                         <Button className="w-full">
-                          Sign up
+                          注册
                         </Button>
                       </Link>
                     </>

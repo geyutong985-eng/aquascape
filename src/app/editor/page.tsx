@@ -1,10 +1,9 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import dynamic from "next/dynamic"
-import Image from "next/image"
 import {
   ArrowLeft,
   CheckCircle2,
@@ -60,58 +59,292 @@ const styleGroups: { name: string; models: CatalogModel[] }[] = [
   {
     name: "神秘洞穴",
     models: [
-      { name: "幽灵脸洞", tags: ["穿行", "躲藏"], price: 89 },
-      { name: "怪兽洞穴", tags: ["躲藏", "堆叠"], price: 99 },
-      { name: "表情凹陷", tags: ["点缀", "躲藏"], price: 79 },
-      { name: "多孔洞洞穴", tags: ["穿行", "躲藏"], price: 109 },
-      { name: "悬空桥洞", tags: ["穿行", "悬挂"], price: 119 },
-    ],
+      {
+        name: "幽灵脸洞",
+        tags: [
+          "穿行",
+          "躲藏"
+        ],
+        price: 89,
+        modelPath: "/models/mysterious-caves/ghost-face-cave/model.glb",
+        previewImage: "/models/mysterious-caves/ghost-face-cave/preview.png"
+      },
+      {
+        name: "怪兽洞穴",
+        tags: [
+          "躲藏",
+          "堆叠"
+        ],
+        price: 99,
+        modelPath: "/models/mysterious-caves/monster-cave/model.glb",
+        previewImage: "/models/mysterious-caves/monster-cave/preview.png"
+      },
+      {
+        name: "表情凹陷块",
+        tags: [
+          "点缀",
+          "躲藏"
+        ],
+        price: 79,
+        modelPath: "/models/mysterious-caves/expression-recess-block/model.glb",
+        previewImage: "/models/mysterious-caves/expression-recess-block/preview.png"
+      },
+      {
+        name: "多孔洞洞穴 1",
+        tags: [
+          "穿行",
+          "躲藏"
+        ],
+        price: 109,
+        modelPath: "/models/mysterious-caves/multi-hole-cave-1/model.glb",
+        previewImage: "/models/mysterious-caves/multi-hole-cave-1/preview.png"
+      },
+      {
+        name: "多孔洞洞穴 2",
+        tags: [
+          "穿行",
+          "躲藏"
+        ],
+        price: 109,
+        modelPath: "/models/mysterious-caves/multi-hole-cave-2/model.glb",
+        previewImage: "/models/mysterious-caves/multi-hole-cave-2/preview.png"
+      },
+      {
+        name: "悬空桥洞",
+        tags: [
+          "穿行",
+          "悬挂"
+        ],
+        price: 119,
+        modelPath: "/models/mysterious-caves/suspended-bridge-cave/model.glb",
+        previewImage: "/models/mysterious-caves/suspended-bridge-cave/preview.png"
+      }
+    ]
   },
   {
     name: "轻盈典雅",
     models: [
-      { name: "圆润曲块", tags: ["点缀", "堆叠"], price: 69 },
-      { name: "抽象花瓣形", tags: ["点缀", "悬挂"], price: 88 },
-      { name: "泡泡造型", tags: ["点缀", "躲藏"], price: 76 },
-      { name: "小巧雕塑体块", tags: ["点缀"], price: 66 },
-    ],
+      {
+        name: "圆润曲块",
+        tags: [
+          "点缀",
+          "堆叠"
+        ],
+        price: 69,
+        modelPath: "/models/light-elegance/rounded-curve-block/model.glb",
+        previewImage: "/models/light-elegance/rounded-curve-block/preview.png"
+      },
+      {
+        name: "抽象花瓣形",
+        tags: [
+          "点缀",
+          "悬挂"
+        ],
+        price: 88,
+        modelPath: "/models/light-elegance/abstract-petal/model.glb",
+        previewImage: "/models/light-elegance/abstract-petal/preview.png"
+      },
+      {
+        name: "泡泡造型",
+        tags: [
+          "点缀",
+          "躲藏"
+        ],
+        price: 76,
+        modelPath: "/models/light-elegance/bubble-form/model.glb",
+        previewImage: "/models/light-elegance/bubble-form/preview.png"
+      },
+      {
+        name: "小巧雕塑体块",
+        tags: [
+          "点缀"
+        ],
+        price: 66,
+        modelPath: "/models/light-elegance/small-sculptural-block/model.glb",
+        previewImage: "/models/light-elegance/small-sculptural-block/preview.png"
+      }
+    ]
   },
   {
     name: "几何艺术",
     models: [
-      { name: "环体拱门", tags: ["穿行", "点缀"], price: 98 },
-      { name: "波纹墙", tags: ["躲藏", "悬挂"], price: 95 },
-      { name: "网格塔", tags: ["堆叠", "躲藏"], price: 105 },
-      { name: "柱阵块", tags: ["堆叠", "点缀"], price: 86 },
-    ],
+      {
+        name: "环体拱门",
+        tags: [
+          "穿行",
+          "点缀"
+        ],
+        price: 98,
+        modelPath: "/models/geometric-art/ring-arch/model.glb",
+        previewImage: "/models/geometric-art/ring-arch/preview.png"
+      },
+      {
+        name: "波纹墙",
+        tags: [
+          "躲藏",
+          "悬挂"
+        ],
+        price: 95,
+        modelPath: "/models/geometric-art/ripple-wall/model.glb",
+        previewImage: "/models/geometric-art/ripple-wall/preview.png"
+      },
+      {
+        name: "网格塔",
+        tags: [
+          "堆叠",
+          "躲藏"
+        ],
+        price: 105,
+        modelPath: "/models/geometric-art/grid-tower/model.glb",
+        previewImage: "/models/geometric-art/grid-tower/preview.png"
+      },
+      {
+        name: "柱阵块",
+        tags: [
+          "堆叠",
+          "点缀"
+        ],
+        price: 86,
+        modelPath: "/models/geometric-art/column-array-block/model.glb",
+        previewImage: "/models/geometric-art/column-array-block/preview.png"
+      }
+    ]
   },
   {
     name: "自然有机",
     models: [
-      { name: "扭曲枝条", tags: ["悬挂", "点缀"], price: 92 },
-      { name: "贝壳洞", tags: ["躲藏", "穿行"], price: 89 },
-      { name: "珊瑚骨架", tags: ["穿行", "点缀"], price: 118 },
-      { name: "菌菇洞", tags: ["躲藏", "堆叠"], price: 96 },
-    ],
+      {
+        name: "扭曲枝条",
+        tags: [
+          "悬挂",
+          "点缀"
+        ],
+        price: 92,
+        modelPath: "/models/organic-nature/twisted-branch/model.glb",
+        previewImage: "/models/organic-nature/twisted-branch/preview.png"
+      },
+      {
+        name: "贝壳洞",
+        tags: [
+          "躲藏",
+          "穿行"
+        ],
+        price: 89,
+        modelPath: "/models/organic-nature/shell-cave/model.glb",
+        previewImage: "/models/organic-nature/shell-cave/preview.png"
+      },
+      {
+        name: "珊瑚骨架",
+        tags: [
+          "穿行",
+          "点缀"
+        ],
+        price: 118,
+        modelPath: "/models/organic-nature/coral-skeleton/model.glb",
+        previewImage: "/models/organic-nature/coral-skeleton/preview.png"
+      },
+      {
+        name: "菌菇洞",
+        tags: [
+          "躲藏",
+          "堆叠"
+        ],
+        price: 96,
+        modelPath: "/models/organic-nature/mushroom-cave/model.glb",
+        previewImage: "/models/organic-nature/mushroom-cave/preview.png"
+      }
+    ]
   },
   {
     name: "微型遗迹",
     models: [
-      { name: "小型拱门", tags: ["穿行", "点缀"], price: 82 },
-      { name: "塔尖模块", tags: ["堆叠", "点缀"], price: 78 },
-      { name: "断桥残柱", tags: ["穿行", "堆叠"], price: 104 },
-      { name: "石碑遗迹块", tags: ["点缀", "躲藏"], price: 86 },
-    ],
+      {
+        name: "小型拱门",
+        tags: [
+          "穿行",
+          "点缀"
+        ],
+        price: 82,
+        modelPath: "/models/miniature-ruins/small-arch/model.glb",
+        previewImage: "/models/miniature-ruins/small-arch/preview.png"
+      },
+      {
+        name: "塔尖模块",
+        tags: [
+          "堆叠",
+          "点缀"
+        ],
+        price: 78,
+        modelPath: "/models/miniature-ruins/spire-module/model.glb",
+        previewImage: "/models/miniature-ruins/spire-module/preview.png"
+      },
+      {
+        name: "断桥残柱",
+        tags: [
+          "穿行",
+          "堆叠"
+        ],
+        price: 104,
+        modelPath: "/models/miniature-ruins/broken-bridge-column/model.glb",
+        previewImage: "/models/miniature-ruins/broken-bridge-column/preview.png"
+      },
+      {
+        name: "石碑遗迹块",
+        tags: [
+          "点缀",
+          "躲藏"
+        ],
+        price: 86,
+        modelPath: "/models/miniature-ruins/stone-tablet-ruin/model.glb",
+        previewImage: "/models/miniature-ruins/stone-tablet-ruin/preview.png"
+      }
+    ]
   },
   {
     name: "极简现代",
     models: [
-      { name: "单体大块", tags: ["躲藏", "堆叠"], price: 88, modelPath: "/models/minimal-modern/single-large-block/model.glb", previewImage: "/models/minimal-modern/single-large-block/preview.png" },
-      { name: "留洞雕塑", tags: ["穿行", "点缀"], price: 108, modelPath: "/models/minimal-modern/hollow-sculpture/model.glb", previewImage: "/models/minimal-modern/hollow-sculpture/preview.png" },
-      { name: "曲面体块", tags: ["点缀", "堆叠"], price: 94, modelPath: "/models/minimal-modern/curved-surface-block/model.glb", previewImage: "/models/minimal-modern/curved-surface-block/preview.png" },
-      { name: "悬浮体块", tags: ["悬挂", "点缀"], price: 112, modelPath: "/models/minimal-modern/floating-block/model.glb", previewImage: "/models/minimal-modern/floating-block/preview.png" },
-    ],
-  },
+      {
+        name: "单体大块",
+        tags: [
+          "躲藏",
+          "堆叠"
+        ],
+        price: 88,
+        modelPath: "/models/minimal-modern/single-large-block/model.glb",
+        previewImage: "/models/minimal-modern/single-large-block/preview.png"
+      },
+      {
+        name: "留洞雕塑",
+        tags: [
+          "穿行",
+          "点缀"
+        ],
+        price: 108,
+        modelPath: "/models/minimal-modern/hollow-sculpture/model.glb",
+        previewImage: "/models/minimal-modern/hollow-sculpture/preview.png"
+      },
+      {
+        name: "曲面体块",
+        tags: [
+          "点缀",
+          "堆叠"
+        ],
+        price: 94,
+        modelPath: "/models/minimal-modern/curved-surface-block/model.glb",
+        previewImage: "/models/minimal-modern/curved-surface-block/preview.png"
+      },
+      {
+        name: "悬浮体块",
+        tags: [
+          "悬挂",
+          "点缀"
+        ],
+        price: 112,
+        modelPath: "/models/minimal-modern/floating-block/model.glb",
+        previewImage: "/models/minimal-modern/floating-block/preview.png"
+      }
+    ]
+  }
 ]
 
 const printMaterials = [
@@ -156,7 +389,6 @@ function ViewCube({
   rotation: ViewCubeRotation
   onChange: (value: ViewPresetId) => void
 }) {
-  const activePreset = viewPresets.find((preset) => preset.id === value)
   const cubeTransform = `rotateX(${rotation.x}deg) rotateY(${rotation.y}deg)`
   const oppositePreset: Partial<Record<ViewPresetId, ViewPresetId>> = {
     front: "back",
@@ -173,7 +405,6 @@ function ViewCube({
     <div
       className="relative h-24 w-24 rounded-2xl border border-white/70 bg-white/60 shadow-lg backdrop-blur-sm"
       style={{ perspective: "520px" }}
-      data-active-preset={activePreset?.id}
       aria-label="视角立方体"
     >
       <div
@@ -370,17 +601,21 @@ export default function EditorPage() {
       return
     }
     window.localStorage.setItem(TANK_SIZE_STORAGE_KEY, JSON.stringify(nextSize))
-    // Tank size comes from URL/localStorage after hydration.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setTankSize(nextSize)
-    setTankSizeReady(true)
+    queueMicrotask(() => {
+      setTankSize(nextSize)
+      setTankSizeReady(true)
+    })
   }, [router])
 
   const activeGroup = styleGroups.find((group) => group.name === activeStyle) ?? styleGroups[0]
   const selectedModel = models.find((model) => model.id === selectedModelId) ?? null
   const total = models.reduce((sum, model) => sum + model.price, 0)
 
-  const undo = useCallback(() => {
+  const pushHistory = (snapshot: AddedModel[] = models) => {
+    setHistory((current) => [...current.slice(-24), snapshot.map((model) => ({ ...model }))])
+  }
+
+  const undo = () => {
     setHistory((current) => {
       const previous = current.at(-1)
       if (!previous) return current
@@ -390,14 +625,14 @@ export default function EditorPage() {
       setSelectedModelIds(nextSelectedId ? [nextSelectedId] : [])
       return current.slice(0, -1)
     })
-  }, [selectedModelId])
+  }
 
-  const commitModels = useCallback((updater: (current: AddedModel[]) => AddedModel[]) => {
+  const commitModels = (updater: (current: AddedModel[]) => AddedModel[]) => {
     setModels((current) => {
       setHistory((historyItems) => [...historyItems.slice(-24), current.map((model) => ({ ...model }))])
       return updater(current)
     })
-  }, [])
+  }
 
   const recordTransformHistory = (snapshot: AddedModel[]) => {
     if (!transformHistoryLocked.current) {
@@ -439,23 +674,23 @@ export default function EditorPage() {
     commitModels((current) => current.map((model) => model.id === selectedModel.id ? { ...model, ...patch } : model))
   }
 
-  const copySelection = useCallback(() => {
+  const copySelection = () => {
     const selectedIds = selectedModelIds.length ? selectedModelIds : selectedModelId ? [selectedModelId] : []
     if (!selectedIds.length) return
     const selectedSet = new Set(selectedIds)
     copiedModels.current = models.filter((model) => selectedSet.has(model.id)).map(cloneModelSnapshot)
-  }, [models, selectedModelId, selectedModelIds])
+  }
 
-  const showEditorNotice = useCallback((message: string) => {
+  const showEditorNotice = (message: string) => {
     setEditorNotice(message)
     if (editorNoticeTimer.current) clearTimeout(editorNoticeTimer.current)
     editorNoticeTimer.current = setTimeout(() => {
       setEditorNotice(null)
       editorNoticeTimer.current = null
     }, 1800)
-  }, [])
+  }
 
-  const pasteSelection = useCallback(() => {
+  const pasteSelection = () => {
     if (!copiedModels.current.length) return
     const pastedIds: string[] = []
 
@@ -479,7 +714,7 @@ export default function EditorPage() {
     }
     setSelectedModelIds(pastedIds)
     setSelectedModelId(pastedIds.at(-1) ?? null)
-  }, [commitModels, showEditorNotice, tankSize])
+  }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -507,7 +742,7 @@ export default function EditorPage() {
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [copySelection, pasteSelection, undo])
+  }, [models, selectedModelId, selectedModelIds, history])
 
   useEffect(() => {
     return () => {
@@ -591,11 +826,9 @@ export default function EditorPage() {
                   >
                     <div className="mb-3 flex aspect-square items-center justify-center rounded-md bg-[radial-gradient(circle_at_35%_20%,white,oklch(0.88_0.018_190))]">
                       {model.previewImage ? (
-                        <Image
+                        <img
                           src={model.previewImage}
                           alt={model.name}
-                          width={240}
-                          height={240}
                           className="h-full w-full object-contain p-2"
                           draggable={false}
                         />

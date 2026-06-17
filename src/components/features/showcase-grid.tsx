@@ -15,8 +15,8 @@ export function ShowcaseGrid({ items }: ShowcaseGridProps) {
   return (
     <section id="showcase" className="py-24 overflow-hidden bg-muted/30">
       <div className="max-w-7xl mx-auto px-6 mb-12">
-        <h2 className="heading-2 text-foreground mb-3">Featured Designs</h2>
-        <p className="text-body text-muted-foreground">Get inspired by creations from our community</p>
+        <h2 className="heading-2 text-foreground mb-3">精选造景方案</h2>
+        <p className="text-body text-muted-foreground">从社区作品里寻找适合你鱼缸的灵感</p>
       </div>
 
       {/* Auto-scrolling Marquee - full width, no indent */}
@@ -24,7 +24,7 @@ export function ShowcaseGrid({ items }: ShowcaseGridProps) {
 
       <div className="max-w-7xl mx-auto px-6 mt-12">
         <Link href="/gallery" className="inline-flex items-center gap-2 text-brand hover:opacity-80 transition-opacity font-medium">
-          View More Designs
+          查看更多方案
           <ArrowRight className="w-4 h-4" />
         </Link>
       </div>

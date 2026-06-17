@@ -1,22 +1,41 @@
 import type { Metadata } from "next";
-import { Young_Serif, Source_Sans_3 } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const youngSerif = Young_Serif({
-  subsets: ["latin"],
-  variable: "--font-heading",
+const hanChanKuanHei = localFont({
+  src: "../../public/fonts/HanChanKuanHeiTi-2-subset.woff2",
+  variable: "--font-hanchan-kuanhei",
   weight: "400",
+  display: "swap",
+  fallback: ["Alibaba PuHuiTi", "Microsoft YaHei", "sans-serif"],
 });
 
-const sourceSans3 = Source_Sans_3({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600"],
+const alibabaPuHuiTi = localFont({
+  src: [
+    {
+      path: "../../public/fonts/AlibabaPuHuiTi-3-55-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/AlibabaPuHuiTi-3-65-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/AlibabaPuHuiTi-3-75-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+  ],
+  variable: "--font-alibaba-puhuiti",
+  display: "swap",
+  fallback: ["Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", "sans-serif"],
 });
 
 export const metadata: Metadata = {
-  title: "Finscape - Build Your Dream Aquarium",
-  description: "Design stunning aquascapes with AI assistance. Visualize in 3D. Print your creation with precision.",
+  title: "Finscape - 定制你的理想鱼缸造景",
+  description: "用 AI 辅助设计鱼缸造景，实时预览 3D 效果，并通过 3D 打印交付你的专属作品。",
 };
 
 export default function RootLayout({
@@ -25,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`h-full antialiased ${youngSerif.variable} ${sourceSans3.variable}`}>
+    <html lang="zh-CN" className={`h-full antialiased ${hanChanKuanHei.variable} ${alibabaPuHuiTi.variable}`}>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );
