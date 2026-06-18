@@ -839,8 +839,10 @@ export default function EditorPage() {
       return
     }
     window.localStorage.setItem(TANK_SIZE_STORAGE_KEY, JSON.stringify(nextSize))
-    setTankSize(nextSize)
-    setTankSizeReady(true)
+    queueMicrotask(() => {
+      setTankSize(nextSize)
+      setTankSizeReady(true)
+    })
   }, [router])
 
   const activeGroup = styleGroups.find((group) => group.name === activeStyle) ?? styleGroups[0]

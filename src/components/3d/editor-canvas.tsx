@@ -861,7 +861,8 @@ function Scene({
   const [selectionDrag, setSelectionDrag] = useState<null | { startX: number; startY: number; currentX: number; currentY: number }>(null)
   const groupStartRef = useRef<null | { proxy: Material; materials: Material[] }>(null)
   const { camera, gl, pointer, raycaster } = useThree()
-  const dragPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR_Y), [])
+  const dragPlaneRef = useRef(new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR_Y))
+  const dragPlane = dragPlaneRef.current
   const dragPoint = useMemo(() => new THREE.Vector3(), [])
   const l = tankSize.length * SCENE_SCALE
   const w = tankSize.width * SCENE_SCALE

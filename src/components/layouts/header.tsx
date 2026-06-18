@@ -19,8 +19,10 @@ export function Header() {
     const supabase = createOptionalSupabaseClient();
 
     if (!supabase) {
-      setUser(null);
-      setLoading(false);
+      queueMicrotask(() => {
+        setUser(null);
+        setLoading(false);
+      });
       return;
     }
 
