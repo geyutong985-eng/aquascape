@@ -1386,7 +1386,7 @@ export default function EditorPage() {
               <div className="flex items-center gap-2 text-sm text-muted-foreground"><CircleDollarSign className="h-4 w-4" />合计</div>
               <p className="text-xl font-semibold">¥{total}</p>
             </div>
-            <Button className="mt-3 w-full" disabled={models.length === 0} onClick={startCheckout}>一键下单</Button>
+            <Button className="mt-3 w-full" onClick={startCheckout}>一键下单</Button>
           </section>
 
         </aside>

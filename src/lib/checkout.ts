@@ -18,6 +18,12 @@ export type CheckoutDraft = {
   id: string
   source: "editor" | "membership"
   createdAt: string
+  membershipPlan?: {
+    id: string
+    name: string
+    price: number
+    billing: string
+  }
   tankSize?: {
     length: number
     width: number

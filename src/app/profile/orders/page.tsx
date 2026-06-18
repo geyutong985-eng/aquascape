@@ -16,15 +16,20 @@ export default function OrdersPage() {
     })
   }, [])
 
-  const items = orders.map((order) => ({
-    id: order.orderId,
-    title: `订单 ${order.orderId}`,
-    description: `${order.items.length} 个模型 · ${order.deliveryMethod} · ${order.paymentMethod}`,
-    date: new Date(order.createdAt).toLocaleDateString("zh-CN"),
-    status: order.status,
-    price: `¥${order.total}`,
-    href: "#",
-  }))
+  const items = orders.map((order) => {
+    const isMembershipOrder = order.source === "membership" || order.items.length === 0
+    return {
+      id: order.orderId,
+      title: `订单 ${order.orderId}`,
+      description: isMembershipOrder
+        ? `${order.membershipPlan?.name ?? "会员方案"} · ${order.paymentMethod}`
+        : `${order.items.length} 个模型 · ${order.deliveryMethod} · ${order.paymentMethod}`,
+      date: new Date(order.createdAt).toLocaleDateString("zh-CN"),
+      status: order.status,
+      price: `¥${order.total}`,
+      href: "#",
+    }
+  })
 
   return (
     <ProfileList
