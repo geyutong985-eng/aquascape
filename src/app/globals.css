@@ -136,16 +136,21 @@
 
 @layer utilities {
   .heading-display {
-    @apply font-heading font-normal text-5xl md:text-6xl lg:text-7xl leading-[1.05];
+    @apply font-heading font-normal text-6xl md:text-7xl lg:text-8xl leading-[0.95] tracking-[0.045em];
+    text-wrap: balance;
+    font-synthesis: none;
   }
   .heading-1 {
-    @apply font-heading font-normal text-4xl md:text-5xl leading-[1.1];
+    @apply font-heading font-normal text-4xl md:text-5xl leading-[1.05] tracking-[0.035em];
+    font-synthesis: none;
   }
   .heading-2 {
-    @apply font-heading font-normal text-3xl md:text-4xl leading-[1.15];
+    @apply font-heading font-normal text-3xl md:text-4xl leading-[1.1] tracking-[0.03em];
+    font-synthesis: none;
   }
   .heading-3 {
-    @apply font-heading font-normal text-xl md:text-2xl leading-[1.25];
+    @apply font-heading font-normal text-xl md:text-2xl leading-[1.2] tracking-[0.02em];
+    font-synthesis: none;
   }
   .text-body {
     @apply text-base md:text-lg leading-relaxed;

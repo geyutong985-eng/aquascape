@@ -15,7 +15,7 @@ export function Hero() {
         <HeroContent>
           <h1 className="heading-display text-foreground mb-8">
             定制你的理想
-            <span className="block text-brand">鱼缸造景</span>
+            <span className="block text-brand pl-[0.045em]">鱼缸造景</span>
           </h1>
           <p className="text-xl text-muted-foreground mb-12 max-w-lg mx-auto leading-relaxed">
             用 <span className="text-foreground font-semibold">AI 辅助生成</span> 造景方案，实时
