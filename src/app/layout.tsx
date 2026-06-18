@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const harmonyOSSansSC = localFont({
-  src: "../../public/fonts/HarmonyOS_Sans_SC.ttf",
-  variable: "--font-harmonyos-sans-sc",
-  weight: "100 900",
+const smileySans = localFont({
+  src: "../../public/fonts/SmileySans-Oblique.otf.woff2",
+  variable: "--font-smiley-sans",
+  weight: "400",
   display: "swap",
   fallback: ["Alibaba PuHuiTi", "Microsoft YaHei", "PingFang SC", "sans-serif"],
 });
@@ -44,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`h-full antialiased ${harmonyOSSansSC.variable} ${alibabaPuHuiTi.variable}`}>
+    <html lang="zh-CN" className={`h-full antialiased ${smileySans.variable} ${alibabaPuHuiTi.variable}`}>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );
