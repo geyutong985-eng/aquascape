@@ -52,14 +52,10 @@ export default function CheckoutPage() {
   useEffect(() => {
     queueMicrotask(() => {
       const params = new URLSearchParams(window.location.search)
-      const plan = findMembershipPlan(params.get("plan"))
-      const storedDraft = readCheckoutDraft()
+      const planId = params.get("plan")
+      const plan = findMembershipPlan(planId)
 
-      if (storedDraft?.items.length) {
-        setDraft(storedDraft)
-        setCheckoutKind("editor")
-        setMembershipPlanId(params.get("plan") ? plan.id : "basic")
-      } else if (params.get("plan")) {
+      if (planId) {
         setDraft({
           id: `membership-${Date.now()}`,
           source: "membership",
@@ -75,7 +71,14 @@ export default function CheckoutPage() {
         setCheckoutKind("membership")
         setMembershipPlanId(plan.id)
       } else {
-        setCheckoutKind("empty")
+        const storedDraft = readCheckoutDraft()
+        if (storedDraft?.items.length) {
+          setDraft(storedDraft)
+          setCheckoutKind("editor")
+          setMembershipPlanId("basic")
+        } else {
+          setCheckoutKind("empty")
+        }
       }
 
       setReady(true)
