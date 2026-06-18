@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, CheckCircle2, CreditCard, PackageCheck, ShieldCheck, Sparkles, Truck } from "lucide-react"
+import { ArrowLeft, CheckCircle2, CreditCard, PackageCheck, ShieldCheck, Sparkles } from "lucide-react"
 
 import { Header, Footer } from "@/components/layouts"
 import { Button } from "@/components/ui/button"
@@ -17,11 +17,6 @@ import {
   saveCheckoutOrder,
 } from "@/lib/checkout"
 
-const deliveryOptions = [
-  { id: "standard", name: "标准配送", desc: "预计 5-7 天完成打印与发货", fee: 18 },
-  { id: "studio", name: "到校自取", desc: "完成后在工作室确认取件", fee: 0 },
-]
-
 const paymentOptions = [
   { id: "wechat", name: "微信支付" },
   { id: "alipay", name: "支付宝" },
@@ -29,10 +24,9 @@ const paymentOptions = [
 ]
 
 const membershipPlans = [
-  { id: "none", name: "暂不购买会员", desc: "仅结算当前模型打印订单", price: 0, billing: "" },
-  { id: "basic", name: "Basic 基础定制", desc: "适合第一次体验个性化造景", price: 0, billing: "永久免费" },
-  { id: "studio", name: "Studio 高级个性化", desc: "解锁 AI 方案生成与材质建议", price: 69, billing: "年付" },
-  { id: "collectors", name: "Collectors 旗舰全能档", desc: "解锁联名系列、拓展包和设计师权益", price: 99, billing: "年付" },
+  { id: "basic", name: "Basic 基础定制", desc: "免费保留当前打印订单，适合先体验基础造景。", price: 0, billing: "当前基础档", badge: "免费" },
+  { id: "studio", name: "Studio 高级个性化", desc: "解锁 AI 方案生成、材质建议和更多方案版本。", price: 69, billing: "年付", badge: "推荐升级" },
+  { id: "collectors", name: "Collectors 旗舰全能档", desc: "解锁联名系列、拓展包和设计师权益。", price: 99, billing: "年付", badge: "高阶权益" },
 ]
 
 const defaultCustomer = {
@@ -51,9 +45,8 @@ export default function CheckoutPage() {
   const [draft, setDraft] = useState<CheckoutDraft | null>(null)
   const [ready, setReady] = useState(false)
   const [checkoutKind, setCheckoutKind] = useState<"editor" | "membership" | "empty">("empty")
-  const [deliveryMethod, setDeliveryMethod] = useState(deliveryOptions[0].id)
   const [paymentMethod, setPaymentMethod] = useState(paymentOptions[0].id)
-  const [membershipPlanId, setMembershipPlanId] = useState("none")
+  const [membershipPlanId, setMembershipPlanId] = useState("basic")
   const [customer, setCustomer] = useState(defaultCustomer)
 
   useEffect(() => {
@@ -65,7 +58,7 @@ export default function CheckoutPage() {
       if (storedDraft?.items.length) {
         setDraft(storedDraft)
         setCheckoutKind("editor")
-        setMembershipPlanId(params.get("plan") ? plan.id : "none")
+        setMembershipPlanId(params.get("plan") ? plan.id : "basic")
       } else if (params.get("plan")) {
         setDraft({
           id: `membership-${Date.now()}`,
@@ -89,13 +82,12 @@ export default function CheckoutPage() {
     })
   }, [])
 
-  const selectedDelivery = deliveryOptions.find((option) => option.id === deliveryMethod) ?? deliveryOptions[0]
   const selectedPayment = paymentOptions.find((option) => option.id === paymentMethod) ?? paymentOptions[0]
   const selectedMembership = findMembershipPlan(membershipPlanId)
   const subtotal = useMemo(() => getCheckoutSubtotal(draft?.items ?? []), [draft])
   const productionFee = checkoutKind === "editor" && draft?.items.length ? Math.max(28, draft.items.length * 12) : 0
-  const deliveryFee = checkoutKind === "editor" ? selectedDelivery.fee : 0
-  const membershipFee = checkoutKind === "membership" || selectedMembership.id !== "none" ? selectedMembership.price : 0
+  const deliveryFee = 0
+  const membershipFee = selectedMembership.price
   const total = subtotal + productionFee + deliveryFee + membershipFee
   const requiresAddress = checkoutKind === "editor"
 
@@ -106,7 +98,7 @@ export default function CheckoutPage() {
     saveCheckoutOrder({
       ...draft,
       source: checkoutKind === "membership" ? "membership" : "editor",
-      membershipPlan: selectedMembership.id === "none" ? undefined : {
+      membershipPlan: {
         id: selectedMembership.id,
         name: selectedMembership.name,
         price: selectedMembership.price,
@@ -115,7 +107,7 @@ export default function CheckoutPage() {
       orderId,
       status: "已提交",
       paymentMethod: selectedPayment.name,
-      deliveryMethod: requiresAddress ? selectedDelivery.name : "无需配送",
+      deliveryMethod: requiresAddress ? "打印完成后联系确认" : "无需配送",
       customer: requiresAddress ? customer : { ...defaultCustomer, name: customer.name, phone: customer.phone },
       subtotal,
       productionFee,
@@ -227,10 +219,14 @@ export default function CheckoutPage() {
                   <Sparkles className="h-5 w-5 text-brand" />
                   <h2 className="text-xl font-heading font-medium text-foreground">会员方案</h2>
                 </div>
-                <div className="grid gap-3 md:grid-cols-2">
+                <p className="mb-4 rounded-lg bg-brand/5 px-4 py-3 text-sm text-brand">
+                  升级会员可解锁 AI 方案生成、更多模型库和设计师服务；Basic 就是免费基础档。
+                </p>
+                <div className="grid gap-3 md:grid-cols-3">
                   {membershipPlans.map((plan) => (
-                    <label key={plan.id} className={`cursor-pointer rounded-lg border p-4 transition-colors ${membershipPlanId === plan.id ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"}`}>
+                    <label key={plan.id} className={`relative cursor-pointer rounded-lg border p-4 transition-colors ${membershipPlanId === plan.id ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"} ${plan.id === "studio" ? "shadow-sm shadow-brand/10" : ""}`}>
                       <input className="sr-only" type="radio" name="membership" checked={membershipPlanId === plan.id} onChange={() => setMembershipPlanId(plan.id)} />
+                      <span className={`mb-3 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${plan.id === "studio" ? "bg-brand text-white" : "bg-muted text-muted-foreground"}`}>{plan.badge}</span>
                       <span className="flex items-start justify-between gap-3">
                         <span>
                           <span className="block font-medium text-foreground">{plan.name}</span>
@@ -244,39 +240,20 @@ export default function CheckoutPage() {
               </section>
             )}
 
-            {requiresAddress && (
-              <section className="rounded-lg border bg-card p-6">
-                <div className="mb-4 flex items-center gap-3">
-                  <Truck className="h-5 w-5 text-brand" />
-                  <h2 className="text-xl font-heading font-medium text-foreground">配送方式</h2>
-                </div>
-                <div className="grid gap-3 md:grid-cols-2">
-                  {deliveryOptions.map((option) => (
-                    <label key={option.id} className={`cursor-pointer rounded-lg border p-4 transition-colors ${deliveryMethod === option.id ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"}`}>
-                      <input className="sr-only" type="radio" name="delivery" checked={deliveryMethod === option.id} onChange={() => setDeliveryMethod(option.id)} />
-                      <span className="flex items-center justify-between gap-3">
-                        <span>
-                          <span className="block font-medium text-foreground">{option.name}</span>
-                          <span className="mt-1 block text-xs text-muted-foreground">{option.desc}</span>
-                        </span>
-                        <span className="text-sm font-semibold text-foreground">{option.fee ? `¥${option.fee}` : "免费"}</span>
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              </section>
-            )}
-
             {checkoutKind === "membership" && (
               <section className="rounded-lg border bg-card p-6">
                 <div className="mb-4 flex items-center gap-3">
                   <Sparkles className="h-5 w-5 text-brand" />
                   <h2 className="text-xl font-heading font-medium text-foreground">会员方案</h2>
                 </div>
+                <p className="mb-4 rounded-lg bg-brand/5 px-4 py-3 text-sm text-brand">
+                  推荐 Studio 年付方案，适合需要 AI 辅助快速出方案的造景用户。
+                </p>
                 <div className="grid gap-3 md:grid-cols-3">
-                  {membershipPlans.filter((plan) => plan.id !== "none").map((plan) => (
-                    <label key={plan.id} className={`cursor-pointer rounded-lg border p-4 transition-colors ${membershipPlanId === plan.id ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"}`}>
+                  {membershipPlans.map((plan) => (
+                    <label key={plan.id} className={`relative cursor-pointer rounded-lg border p-4 transition-colors ${membershipPlanId === plan.id ? "border-brand bg-brand/5" : "border-border hover:border-brand/50"} ${plan.id === "studio" ? "shadow-sm shadow-brand/10" : ""}`}>
                       <input className="sr-only" type="radio" name="membership" checked={membershipPlanId === plan.id} onChange={() => setMembershipPlanId(plan.id)} />
+                      <span className={`mb-3 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${plan.id === "studio" ? "bg-brand text-white" : "bg-muted text-muted-foreground"}`}>{plan.badge}</span>
                       <span className="block font-medium text-foreground">{plan.name}</span>
                       <span className="mt-1 block text-xs leading-5 text-muted-foreground">{plan.desc}</span>
                       <span className="mt-3 block text-lg font-semibold text-foreground">{plan.price ? `¥${plan.price}` : "¥0"}</span>
@@ -342,12 +319,9 @@ export default function CheckoutPage() {
                 <>
                   <div className="flex justify-between text-muted-foreground"><span>模型小计</span><span>¥{subtotal}</span></div>
                   <div className="flex justify-between text-muted-foreground"><span>打印处理</span><span>¥{productionFee}</span></div>
-                  <div className="flex justify-between text-muted-foreground"><span>配送</span><span>{deliveryFee ? `¥${deliveryFee}` : "免费"}</span></div>
                 </>
               )}
-              {selectedMembership.id !== "none" && (
-                <div className="flex justify-between text-muted-foreground"><span>会员方案</span><span>{membershipFee ? `¥${membershipFee}` : "免费"}</span></div>
-              )}
+              <div className="flex justify-between text-muted-foreground"><span>会员方案</span><span>{membershipFee ? `¥${membershipFee}` : "免费"}</span></div>
               <div className="flex justify-between border-t border-border pt-3 text-lg font-semibold text-foreground"><span>合计</span><span>¥{total}</span></div>
             </div>
 

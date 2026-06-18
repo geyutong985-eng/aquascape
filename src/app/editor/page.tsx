@@ -873,7 +873,7 @@ export default function EditorPage() {
         modelPath: model.modelPath,
       })),
     })
-    router.push("/checkout?source=editor")
+    window.location.assign("/checkout?source=editor")
   }
 
   const pushHistory = (snapshot: AddedModel[] = models) => {
