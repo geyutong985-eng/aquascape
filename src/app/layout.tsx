@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 
 const hanChanKuanHei = localFont({
-  src: "../../public/fonts/HanChanKuanHeiTi-2-subset.woff2",
+  src: "../../public/fonts/HanChanKuanHeiTi-2.otf",
   variable: "--font-hanchan-kuanhei",
   weight: "400",
   display: "swap",
