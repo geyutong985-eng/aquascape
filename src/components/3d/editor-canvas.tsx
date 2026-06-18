@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, type ElementRef, useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { Suspense, type ElementRef, useEffect, useMemo, useRef, useState } from "react"
 import { Canvas, ThreeEvent, useThree } from "@react-three/fiber"
 import { ContactShadows, Html, OrbitControls, PerspectiveCamera, useGLTF } from "@react-three/drei"
 import * as THREE from "three"
@@ -54,6 +54,7 @@ interface Props {
 }
 
 const SCENE_SCALE = 0.8
+const BASE_RADIUS = 4.8
 const FLOOR_Y = 1.25
 
 const colorMap: Record<string, string> = {
@@ -587,6 +588,7 @@ function ScaleHandles({
   material: Material
   onPointerDown: (event: ThreeEvent<PointerEvent>) => void
 }) {
+  const bounds = getModelBounds(material)
   const extents = getProjectedExtents(material)
   const margin = THREE.MathUtils.clamp(Math.max(extents.halfX, extents.halfZ, extents.height) * 0.08, 0.55, 1.4)
   const handleSize = THREE.MathUtils.clamp(Math.max(extents.halfX, extents.halfZ, extents.height) * 0.08, 0.65, 1.15)
@@ -644,7 +646,7 @@ function TransformGizmo({
   onDragStateChange: (dragging: boolean) => void
   onTransformStart?: (material: Material) => void
 }) {
-  const { camera, pointer, raycaster } = useThree()
+  const { camera, gl, pointer, raycaster } = useThree()
   const [drag, setDrag] = useState<null | {
     axis: Axis | "scale" | "rotate"
     startPoint: THREE.Vector3
@@ -659,7 +661,7 @@ function TransformGizmo({
   const rotateRadius = THREE.MathUtils.clamp(Math.max(extents.halfX, extents.halfZ) + 0.9, 3.2, 15)
   const rotateTube = THREE.MathUtils.clamp(rotateRadius * 0.026, 0.12, 0.28)
   const rotateHitTube = THREE.MathUtils.clamp(rotateRadius * 0.12, 0.55, 1.4)
-  const applyScaleDrag = useCallback((clientY: number, activeDrag: NonNullable<typeof drag>) => {
+  const applyScaleDrag = (clientY: number, activeDrag: NonNullable<typeof drag>) => {
     if (!onMaterialUpdate || activeDrag.axis !== "scale") return
     const clientDelta = (activeDrag.startClientY ?? clientY) - clientY
     const ratio = THREE.MathUtils.clamp(1 + clientDelta * 0.008, 0.35, 3.2)
@@ -671,7 +673,7 @@ function TransformGizmo({
       z: clamped.z,
       scale: clamped.scale,
     }, activeDrag.startMaterial)
-  }, [material, materials, onMaterialUpdate, tankSize])
+  }
 
   useEffect(() => {
     if (!drag || drag.axis !== "scale") return
@@ -691,7 +693,7 @@ function TransformGizmo({
       window.removeEventListener("pointerup", handleUp)
       window.removeEventListener("pointercancel", handleUp)
     }
-  }, [applyScaleDrag, drag, onDragStateChange])
+  }, [drag, materials, onDragStateChange, onMaterialUpdate, tankSize])
 
   const beginDrag = (axis: Axis, event: ThreeEvent<PointerEvent>) => {
     stopEditorGesture(event)
@@ -859,7 +861,7 @@ function Scene({
   const [selectionDrag, setSelectionDrag] = useState<null | { startX: number; startY: number; currentX: number; currentY: number }>(null)
   const groupStartRef = useRef<null | { proxy: Material; materials: Material[] }>(null)
   const { camera, gl, pointer, raycaster } = useThree()
-  const dragPlaneRef = useRef(new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR_Y))
+  const dragPlane = useMemo(() => new THREE.Plane(new THREE.Vector3(0, 1, 0), -FLOOR_Y), [])
   const dragPoint = useMemo(() => new THREE.Vector3(), [])
   const l = tankSize.length * SCENE_SCALE
   const w = tankSize.width * SCENE_SCALE
@@ -871,7 +873,7 @@ function Scene({
   const activeTransformTarget = groupSelection ?? selected
   const lastCameraRotation = useRef({ x: Number.NaN, y: Number.NaN })
 
-  const reportCameraRotation = useCallback(() => {
+  const reportCameraRotation = () => {
     if (!onCameraRotationChange) return
     const target = controlsRef.current?.target ?? new THREE.Vector3(0, h * 0.36, 0)
     const offset = camera.position.clone().sub(target)
@@ -884,7 +886,7 @@ function Scene({
     if (Math.abs(previous.x - nextRotation.x) < 0.4 && Math.abs(previous.y - nextRotation.y) < 0.4) return
     lastCameraRotation.current = nextRotation
     onCameraRotationChange(nextRotation)
-  }, [camera, h, onCameraRotationChange])
+  }
 
   useEffect(() => {
     const positions: Record<ViewPreset, [number, number, number]> = {
@@ -901,7 +903,7 @@ function Scene({
     controlsRef.current?.target.set(0, h * 0.36, 0)
     controlsRef.current?.update()
     reportCameraRotation()
-  }, [camera, cameraDistance, h, reportCameraRotation, viewPreset] )
+  }, [camera, cameraDistance, h, viewPreset] )
 
   const beginSelection = (event: ThreeEvent<PointerEvent>) => {
     const wantsSelection = transformMode === "select" || event.nativeEvent.shiftKey
@@ -978,7 +980,6 @@ function Scene({
     onMaterialSelect(material.id)
     onMaterialSelectionChange?.([material.id])
     if (transformMode !== "translate") return
-    const dragPlane = dragPlaneRef.current
     dragPlane.constant = -material.y
     raycaster.setFromCamera(pointer, camera)
     raycaster.ray.intersectPlane(dragPlane, dragPoint)
@@ -998,7 +999,7 @@ function Scene({
         if (!objectDrag || !onMaterialUpdate) return
         stopEditorGesture(event)
         raycaster.setFromCamera(pointer, camera)
-        const point = raycaster.ray.intersectPlane(dragPlaneRef.current, dragPoint)
+        const point = raycaster.ray.intersectPlane(dragPlane, dragPoint)
         if (!point) return
         const delta = dragPoint.clone().sub(objectDrag.startPoint)
         const currentMaterial = materials.find((item) => item.id === objectDrag.id) ?? objectDrag.startMaterial

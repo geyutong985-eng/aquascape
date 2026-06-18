@@ -6,7 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Menu, Close } from "@/components/icons";
 import { UserAvatar } from "@/components/ui/user-avatar";
-import { createSupabaseClient } from "@/lib/supabase/client";
+import { createOptionalSupabaseClient } from "@/lib/supabase/client";
 
 export function Header() {
   const router = useRouter();
@@ -16,7 +16,13 @@ export function Header() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const supabase = createSupabaseClient();
+    const supabase = createOptionalSupabaseClient();
+
+    if (!supabase) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
 
     // First try to get the session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -34,8 +40,8 @@ export function Header() {
   }, []);
 
   const handleSignOut = async () => {
-    const supabase = createSupabaseClient();
-    await supabase.auth.signOut();
+    const supabase = createOptionalSupabaseClient();
+    await supabase?.auth.signOut();
     setUser(null);
     router.push("/");
   };
