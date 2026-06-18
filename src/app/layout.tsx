@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
-const hanChanKuanHei = localFont({
-  src: "../../public/fonts/HanChanKuanHeiTi-2.otf",
-  variable: "--font-hanchan-kuanhei",
-  weight: "400",
+const harmonyOSSansSC = localFont({
+  src: "../../public/fonts/HarmonyOS_Sans_SC.ttf",
+  variable: "--font-harmonyos-sans-sc",
+  weight: "100 900",
   display: "swap",
-  fallback: ["Alibaba PuHuiTi", "Microsoft YaHei", "sans-serif"],
+  fallback: ["Alibaba PuHuiTi", "Microsoft YaHei", "PingFang SC", "sans-serif"],
 });
 
 const alibabaPuHuiTi = localFont({
@@ -44,7 +44,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN" className={`h-full antialiased ${hanChanKuanHei.variable} ${alibabaPuHuiTi.variable}`}>
+    <html lang="zh-CN" className={`h-full antialiased ${harmonyOSSansSC.variable} ${alibabaPuHuiTi.variable}`}>
       <body className="min-h-full flex flex-col font-sans">{children}</body>
     </html>
   );

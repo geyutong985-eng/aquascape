@@ -84,7 +84,7 @@ export default function ProfilePage() {
       </div>
 
       <header className="mb-12">
-        <h1 className="text-3xl font-heading font-normal text-foreground mb-2">
+        <h1 className="text-3xl font-heading font-black text-foreground mb-2">
           欢迎回来，{userName}
         </h1>
         <p className="text-muted-foreground text-lg">
