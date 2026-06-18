@@ -136,20 +136,20 @@
 
 @layer utilities {
   .heading-display {
-    @apply font-heading font-black text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-normal;
+    @apply font-heading font-bold text-5xl md:text-6xl lg:text-7xl leading-[1.05] tracking-normal;
     text-wrap: balance;
     font-synthesis: none;
   }
   .heading-1 {
-    @apply font-heading font-black text-4xl md:text-5xl leading-[1.1] tracking-normal;
+    @apply font-heading font-bold text-4xl md:text-5xl leading-[1.1] tracking-normal;
     font-synthesis: none;
   }
   .heading-2 {
-    @apply font-heading font-black text-3xl md:text-4xl leading-[1.15] tracking-normal;
+    @apply font-heading font-bold text-3xl md:text-4xl leading-[1.15] tracking-normal;
     font-synthesis: none;
   }
   .heading-3 {
-    @apply font-heading font-black text-xl md:text-2xl leading-[1.25] tracking-normal;
+    @apply font-heading font-bold text-xl md:text-2xl leading-[1.25] tracking-normal;
     font-synthesis: none;
   }
   .text-body {

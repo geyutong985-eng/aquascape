@@ -119,7 +119,7 @@ export default function MembershipPage() {
               <Sparkles className="h-4 w-4" />
               Membership
             </p>
-            <h1 className="mt-4 text-3xl font-heading font-black leading-tight text-foreground md:text-5xl">
+            <h1 className="mt-4 text-3xl font-heading font-bold leading-tight text-foreground md:text-5xl">
               让你的鱼缸造景走得更远
             </h1>
             <p className="mt-3 max-w-5xl text-base leading-relaxed text-muted-foreground xl:whitespace-nowrap">
@@ -148,7 +148,7 @@ export default function MembershipPage() {
 
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-col gap-2 lg:flex-row lg:items-baseline lg:gap-4">
-              <h2 className="text-xl font-heading font-black text-foreground md:text-2xl">选择会员方案</h2>
+              <h2 className="text-xl font-heading font-bold text-foreground md:text-2xl">选择会员方案</h2>
               <p className="text-sm text-muted-foreground lg:whitespace-nowrap">默认年度会员，适合周期更长的造景项目。</p>
             </div>
 
@@ -191,17 +191,17 @@ export default function MembershipPage() {
 
                   <div className="mt-6">
                     <p className="text-sm font-semibold tracking-[0.18em] text-brand">{plan.name}</p>
-                    <h3 className="mt-2 text-2xl font-heading font-black text-foreground">{plan.cnName}</h3>
+                    <h3 className="mt-2 text-2xl font-heading font-bold text-foreground">{plan.cnName}</h3>
                     <p className="mt-3 min-h-[48px] text-sm leading-relaxed text-muted-foreground">{plan.audience}</p>
                   </div>
 
                   <div className="mt-8 flex items-end gap-1">
                     <span className="annual-price">
-                      <span className="text-5xl font-heading font-black text-foreground">{plan.annualPrice}</span>
+                      <span className="text-5xl font-heading font-bold text-foreground">{plan.annualPrice}</span>
                       <span className="pb-2 text-sm text-muted-foreground">{plan.name === "Basic" ? "" : "/年"}</span>
                     </span>
                     <span className="monthly-price">
-                      <span className="text-5xl font-heading font-black text-foreground">{plan.monthlyPrice}</span>
+                      <span className="text-5xl font-heading font-bold text-foreground">{plan.monthlyPrice}</span>
                       <span className="pb-2 text-sm text-muted-foreground">{plan.name === "Basic" ? "" : "/月"}</span>
                     </span>
                   </div>
@@ -240,7 +240,7 @@ export default function MembershipPage() {
         <section className="border-t border-border py-14">
           <div className="mb-7 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <h2 className="text-3xl font-heading font-black text-foreground">功能对比</h2>
+              <h2 className="text-3xl font-heading font-bold text-foreground">功能对比</h2>
               <p className="mt-2 text-sm text-muted-foreground">把基础定制、AI 服务和高级内容库的差异说明白。</p>
             </div>
           </div>
@@ -271,7 +271,7 @@ export default function MembershipPage() {
 
         <section className="grid gap-5 border-t border-border py-14 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <h2 className="text-3xl font-heading font-black text-foreground">从灵感到下单</h2>
+            <h2 className="text-3xl font-heading font-bold text-foreground">从灵感到下单</h2>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
               从灵感浏览到方案确认，每一步都可以逐步推进；先免费试做基础方案，再按需要解锁 AI、设计服务和高级系列。
             </p>
@@ -279,7 +279,7 @@ export default function MembershipPage() {
           <div className="grid gap-3 sm:grid-cols-2">
             {["浏览灵感案例", "免费体验基础定制", "解锁 AI / 个性化服务", "确认材质尺寸与价格", "下单打印生产", "配送到家"].map((step, index) => (
               <div key={step} className="rounded-lg border bg-card p-4">
-                <p className="text-sm font-heading font-black text-brand">{String(index + 1).padStart(2, "0")}</p>
+                <p className="text-sm font-heading font-bold text-brand">{String(index + 1).padStart(2, "0")}</p>
                 <p className="mt-2 font-medium text-foreground">{step}</p>
               </div>
             ))}
@@ -287,7 +287,7 @@ export default function MembershipPage() {
         </section>
 
         <section className="border-t border-border pt-14">
-          <h2 className="text-3xl font-heading font-black text-foreground">FAQ</h2>
+          <h2 className="text-3xl font-heading font-bold text-foreground">FAQ</h2>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
             {faqs.map((faq) => (
               <div key={faq.q} className="rounded-lg border bg-card p-5">
