@@ -136,7 +136,7 @@
 
 @layer utilities {
   .heading-display {
-    @apply font-heading font-semibold text-[4.25rem] md:text-[6.5rem] lg:text-[7.25rem] leading-[1.14] tracking-[0.06em];
+    @apply font-heading font-semibold text-[3.75rem] md:text-[5.5rem] lg:text-[6.25rem] leading-[1.14] tracking-[0.06em];
     text-wrap: balance;
     font-synthesis: none;
   }
