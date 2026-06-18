@@ -136,7 +136,7 @@
 
 @layer utilities {
   .heading-display {
-    @apply font-heading font-semibold text-5xl md:text-6xl lg:text-7xl leading-[1.14] tracking-[0.035em];
+    @apply font-heading font-semibold text-6xl md:text-7xl lg:text-8xl leading-[1.14] tracking-[0.035em];
     text-wrap: balance;
     font-synthesis: none;
   }
