@@ -194,6 +194,60 @@
           "preview": "/models/minimal-modern/floating-block/preview.png"
         }
       ]
+    },
+    {
+      "id": "interactive-toys",
+      "name": "互动玩具系列",
+      "models": [
+        {
+          "id": "glowing-moon",
+          "name": "月球",
+          "path": "/models/interactive-toys/glowing-moon/model.glb",
+          "preview": "/models/interactive-toys/glowing-moon/preview.png"
+        },
+        {
+          "id": "glowing-cave-wall",
+          "name": "洞壁",
+          "path": "/models/interactive-toys/glowing-cave-wall/model.glb",
+          "preview": "/models/interactive-toys/glowing-cave-wall/preview.png"
+        },
+        {
+          "id": "glowing-coral",
+          "name": "珊瑚",
+          "path": "/models/interactive-toys/glowing-coral/model.glb",
+          "preview": "/models/interactive-toys/glowing-coral/preview.png"
+        },
+        {
+          "id": "glowing-reef",
+          "name": "礁石",
+          "path": "/models/interactive-toys/glowing-reef/model.glb",
+          "preview": "/models/interactive-toys/glowing-reef/preview.png"
+        },
+        {
+          "id": "swaying-seagrass",
+          "name": "摇曳海草",
+          "path": "/models/interactive-toys/swaying-seagrass/model.glb",
+          "preview": "/models/interactive-toys/swaying-seagrass/preview.png"
+        },
+        {
+          "id": "rotating-ferris-wheel",
+          "name": "旋转摩天轮",
+          "path": "/models/interactive-toys/rotating-ferris-wheel/model.glb",
+          "preview": "/models/interactive-toys/rotating-ferris-wheel/preview.png"
+        },
+        {
+          "id": "floating-bubbles",
+          "name": "浮动气泡群",
+          "path": "/models/interactive-toys/floating-bubbles/model.glb",
+          "preview": "/models/interactive-toys/floating-bubbles/preview.png"
+        },
+        {
+          "id": "pirate-ship-wreck",
+          "name": "海盗船残骸",
+          "path": "/models/interactive-toys/pirate-ship-wreck/model.glb",
+          "preview": "/models/interactive-toys/pirate-ship-wreck/preview.png"
+        }
+      ]
     }
   ]
 }

@@ -567,6 +567,21 @@ const styleGroups: StyleGroup[] = [
       { name: "珍稀物种套组", tags: ["套组", "珍稀"], price: 368, requiredTier: "vip", desc: "中华鲟、海马群、海龟和锯鳐组合" },
       { name: "海洋进化套组", tags: ["套组", "进化"], price: 388, requiredTier: "vip", desc: "鹦鹉螺、菊石、沧龙和海龟组合" },
     ],
+  },
+  {
+    name: "互动玩具系列",
+    requiredTier: "svip",
+    desc: "发光组件与场景联动模型，适合做高阶互动主题缸。",
+    models: [
+      { name: "月球", tags: ["发光","点缀"], price: 239, requiredTier: "svip", desc: "月球造型发光组件，可作为夜景焦点", materialHint: "半透明树脂 / 夜光材料", tankHint: "60cm+", modelPath: "/models/interactive-toys/glowing-moon/model.glb", previewImage: "/models/interactive-toys/glowing-moon/preview.png" },
+      { name: "洞壁", tags: ["发光","背景"], price: 249, requiredTier: "svip", desc: "可贴合背景的洞壁发光组件", materialHint: "半透明树脂 / 哑光树脂", tankHint: "60cm+", modelPath: "/models/interactive-toys/glowing-cave-wall/model.glb", previewImage: "/models/interactive-toys/glowing-cave-wall/preview.png" },
+      { name: "珊瑚", tags: ["发光","珊瑚"], price: 259, requiredTier: "svip", desc: "发光珊瑚装饰，适合作为局部亮点", materialHint: "夜光材料 / 哑光树脂", tankHint: "45cm+", modelPath: "/models/interactive-toys/glowing-coral/model.glb", previewImage: "/models/interactive-toys/glowing-coral/preview.png" },
+      { name: "礁石", tags: ["发光","礁石"], price: 259, requiredTier: "svip", desc: "发光礁石组件，适合与基础造景组合", materialHint: "半透明树脂 / 低反光哑光", tankHint: "45cm+", modelPath: "/models/interactive-toys/glowing-reef/model.glb", previewImage: "/models/interactive-toys/glowing-reef/preview.png" },
+      { name: "摇曳海草", tags: ["联动","水草"], price: 189, requiredTier: "svip", desc: "随水流产生视觉动态的海草造型", materialHint: "柔性树脂 / 自然木纹", tankHint: "45cm+", modelPath: "/models/interactive-toys/swaying-seagrass/model.glb", previewImage: "/models/interactive-toys/swaying-seagrass/preview.png" },
+      { name: "旋转摩天轮", tags: ["联动","旋转"], price: 269, requiredTier: "svip", desc: "可作为中心趣味点的旋转摩天轮造型", materialHint: "哑光树脂 / 高强度尼龙", tankHint: "60cm+", modelPath: "/models/interactive-toys/rotating-ferris-wheel/model.glb", previewImage: "/models/interactive-toys/rotating-ferris-wheel/preview.png" },
+      { name: "浮动气泡群", tags: ["联动","气泡"], price: 229, requiredTier: "svip", desc: "仿真气泡群，适合营造轻盈水流感", materialHint: "半透明玻璃感", tankHint: "需水流驱动", modelPath: "/models/interactive-toys/floating-bubbles/model.glb", previewImage: "/models/interactive-toys/floating-bubbles/preview.png" },
+      { name: "海盗船残骸", tags: ["联动","沉船"], price: 289, requiredTier: "svip", desc: "海盗船残骸场景件，可组合成探索主题", materialHint: "低反光哑光 / 自然木纹", tankHint: "90cm+", modelPath: "/models/interactive-toys/pirate-ship-wreck/model.glb", previewImage: "/models/interactive-toys/pirate-ship-wreck/preview.png" }
+    ],
   }
 ]
 
