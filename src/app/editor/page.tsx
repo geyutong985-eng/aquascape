@@ -31,6 +31,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { createCheckoutDraftId, saveCheckoutDraft } from "@/lib/checkout"
 
 const ThreeCanvas = dynamic(() => import("@/components/3d/editor-canvas"), {
   ssr: false,
@@ -849,6 +850,32 @@ export default function EditorPage() {
   const selectedModel = models.find((model) => model.id === selectedModelId) ?? null
   const total = models.reduce((sum, model) => sum + model.price, 0)
 
+  const startCheckout = () => {
+    if (models.length === 0) {
+      showEditorNotice("请先添加模型再下单")
+      return
+    }
+    saveCheckoutDraft({
+      id: createCheckoutDraftId(),
+      source: "editor",
+      createdAt: new Date().toISOString(),
+      tankSize,
+      items: models.map((model) => ({
+        id: model.id,
+        name: model.name,
+        material: model.material,
+        color: model.color,
+        price: model.price,
+        scale: model.scale,
+        scaleX: model.scaleX,
+        scaleY: model.scaleY,
+        scaleZ: model.scaleZ,
+        modelPath: model.modelPath,
+      })),
+    })
+    router.push("/checkout?source=editor")
+  }
+
   const pushHistory = (snapshot: AddedModel[] = models) => {
     setHistory((current) => [...current.slice(-24), snapshot.map((model) => ({ ...model }))])
   }
@@ -1359,7 +1386,7 @@ export default function EditorPage() {
               <div className="flex items-center gap-2 text-sm text-muted-foreground"><CircleDollarSign className="h-4 w-4" />合计</div>
               <p className="text-xl font-semibold">¥{total}</p>
             </div>
-            <Button className="mt-3 w-full" disabled={models.length === 0}>一键下单</Button>
+            <Button className="mt-3 w-full" disabled={models.length === 0} onClick={startCheckout}>一键下单</Button>
           </section>
 
         </aside>

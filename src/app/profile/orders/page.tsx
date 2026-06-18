@@ -1,17 +1,37 @@
-import { ProfileList } from "../components/list";
+"use client"
 
-// 临时空数据，等 Supabase 完成后接入
-const orders: { id: string; title: string; date: string; status: string; price: string; href: string }[] = [
-  // { id: "1", title: "订单 #12345", date: "2024-01-10", status: "已完成", price: "¥599", href: "/profile/orders/1" },
-];
+import { useEffect, useState } from "react"
+
+import { readCheckoutOrders, type CheckoutOrder } from "@/lib/checkout"
+import { ProfileList } from "../components/list"
 
 export default function OrdersPage() {
+  const [orders, setOrders] = useState<CheckoutOrder[]>([])
+  const [ready, setReady] = useState(false)
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setOrders(readCheckoutOrders())
+      setReady(true)
+    })
+  }, [])
+
+  const items = orders.map((order) => ({
+    id: order.orderId,
+    title: `订单 ${order.orderId}`,
+    description: `${order.items.length} 个模型 · ${order.deliveryMethod} · ${order.paymentMethod}`,
+    date: new Date(order.createdAt).toLocaleDateString("zh-CN"),
+    status: order.status,
+    price: `¥${order.total}`,
+    href: "#",
+  }))
+
   return (
     <ProfileList
       title="我的订单"
       description="查看你的订单历史"
-      items={orders}
-      emptyText="还没有订单记录"
+      items={items}
+      emptyText={ready ? "还没有订单记录" : "正在读取订单"}
     />
-  );
+  )
 }
