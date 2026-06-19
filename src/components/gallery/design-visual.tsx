@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { DesignColor } from "@/types";
 
 const visualThemes: Record<string, { bg: string; base: string; accent: string; glow: string }> = {
@@ -29,6 +30,20 @@ interface DesignVisualProps {
 }
 
 export function DesignVisual({ image, title, colors = [], className = "" }: DesignVisualProps) {
+  if (image.startsWith("/")) {
+    return (
+      <div className={`relative isolate overflow-hidden bg-muted ${className}`} aria-label={`${title} preview`}>
+        <Image
+          src={image}
+          alt={`${title} 鱼缸造景效果图`}
+          fill
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+          className="object-cover"
+        />
+      </div>
+    );
+  }
+
   const theme = visualThemes[image] ?? visualThemes["minimal-cloud"];
   const palette = colors.slice(0, 4);
 
